@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShareBook.Domain", "ShareBook.Domain\ShareBook.Domain.csproj", "{54BAE4AF-6036-4A06-B56C-0CF56B314BEB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShareBook.Application", "ShareBook.Application\ShareBook.Application.csproj", "{4BEC002F-6437-4A7D-9B30-79D2AD40B08C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShareBook.Infrastructure", "ShareBook.Infrastructure\ShareBook.Infrastructure.csproj", "{AABA6560-7CFD-4EE7-82DB-21698A274A50}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShareBook.API", "ShareBook.API\ShareBook.API.csproj", "{7010A7A6-1F6D-4C54-A06F-52BDEDF20868}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{54BAE4AF-6036-4A06-B56C-0CF56B314BEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54BAE4AF-6036-4A06-B56C-0CF56B314BEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54BAE4AF-6036-4A06-B56C-0CF56B314BEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54BAE4AF-6036-4A06-B56C-0CF56B314BEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4BEC002F-6437-4A7D-9B30-79D2AD40B08C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BEC002F-6437-4A7D-9B30-79D2AD40B08C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4BEC002F-6437-4A7D-9B30-79D2AD40B08C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4BEC002F-6437-4A7D-9B30-79D2AD40B08C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AABA6560-7CFD-4EE7-82DB-21698A274A50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AABA6560-7CFD-4EE7-82DB-21698A274A50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AABA6560-7CFD-4EE7-82DB-21698A274A50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AABA6560-7CFD-4EE7-82DB-21698A274A50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7010A7A6-1F6D-4C54-A06F-52BDEDF20868}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7010A7A6-1F6D-4C54-A06F-52BDEDF20868}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7010A7A6-1F6D-4C54-A06F-52BDEDF20868}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7010A7A6-1F6D-4C54-A06F-52BDEDF20868}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
