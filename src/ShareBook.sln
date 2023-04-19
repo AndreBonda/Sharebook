@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShareBook.Infrastructure", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShareBook.API", "ShareBook.API\ShareBook.API.csproj", "{7010A7A6-1F6D-4C54-A06F-52BDEDF20868}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D1FA3F23-5BA4-41C3-BF6A-94988A32CF77}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShareBook.UnitTests", "Tests\ShareBook.UnitTests\ShareBook.UnitTests.csproj", "{E292FE44-8D4C-4BE7-8622-7822644A7CC4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +40,12 @@ Global
 		{7010A7A6-1F6D-4C54-A06F-52BDEDF20868}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7010A7A6-1F6D-4C54-A06F-52BDEDF20868}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7010A7A6-1F6D-4C54-A06F-52BDEDF20868}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E292FE44-8D4C-4BE7-8622-7822644A7CC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E292FE44-8D4C-4BE7-8622-7822644A7CC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E292FE44-8D4C-4BE7-8622-7822644A7CC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E292FE44-8D4C-4BE7-8622-7822644A7CC4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E292FE44-8D4C-4BE7-8622-7822644A7CC4} = {D1FA3F23-5BA4-41C3-BF6A-94988A32CF77}
 	EndGlobalSection
 EndGlobal
