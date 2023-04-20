@@ -1,5 +1,10 @@
+using MediatR;
 using Microsoft.EntityFrameworkCore;
+using ShareBook.API.Books;
+using ShareBook.Domain.Books;
 using ShareBook.Infrastructure;
+using ShareBook.Infrastructure.Queries;
+using ShareBook.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,11 +15,18 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Setup postgres
+// Postgres
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnectionString"));
 });
+
+// MediatR
+builder.Services.AddMediatR(typeof(ShareBook.Application.StartUp).Assembly);
+
+// Services
+builder.Services.AddScoped<IBookRepository, BookRepository>();
+builder.Services.AddScoped<IBookQueries, BookQueries>();
 
 var app = builder.Build();
 
