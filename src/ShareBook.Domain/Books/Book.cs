@@ -19,7 +19,7 @@ public class Book : Entity<Guid>
         string title,
         string author,
         int pages,
-        IEnumerable<string> labels) : base(new Guid(), DateTime.UtcNow)
+        IEnumerable<string> labels) : base(Guid.NewGuid(), DateTime.UtcNow)
     {
         if (string.IsNullOrWhiteSpace(owner)) throw new ArgumentNullException(nameof(owner));
         if (string.IsNullOrWhiteSpace(title)) throw new ArgumentNullException(nameof(title));
