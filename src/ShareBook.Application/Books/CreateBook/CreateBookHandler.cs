@@ -11,6 +11,7 @@ public class CreateBookHandler : IRequestHandler<CreateBookCmd, Guid>
     {
         _repo = repo;
     }
+    
     public async Task<Guid> Handle(CreateBookCmd request, CancellationToken cancellationToken)
     {
         var book = Book.New(

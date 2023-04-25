@@ -38,7 +38,6 @@ public class BookTests
     [Test]
     public void New_CreateNewBook_IfValidInputs() 
     {
-        var before = DateTime.UtcNow;
         var emptyGuid = Guid.Empty;
         
         var book = Book.New("valid_owner", 
@@ -49,16 +48,17 @@ public class BookTests
 
         Assert.That(book, Is.Not.Null);
         Assert.That(book.Id, Is.Not.EqualTo(emptyGuid));
-        Assert.That(book.CreatedAt, Is.GreaterThan(before));
+        Assert.That(book.CreatedAt, Is.EqualTo(DateTime.UtcNow).Within(1).Minutes);
         Assert.That(book.Owner, Is.EqualTo("valid_owner"));
         Assert.That(book.Title, Is.EqualTo("valid_title"));
         Assert.That(book.Author, Is.EqualTo("valid_author"));
         Assert.That(book.Pages, Is.EqualTo(1));
         Assert.That(book.Labels, Is.EquivalentTo(new string[] { "label1", "label2" }));
+
     }
 
     [Test]
-    public void New_CreateNewBook_RemoveingDuplicaeLabels()
+    public void New_CreateNewBook_IgnoringDuplicateLabels()
     {
         var book = Book.New("valid_owner",
             "valid_title",

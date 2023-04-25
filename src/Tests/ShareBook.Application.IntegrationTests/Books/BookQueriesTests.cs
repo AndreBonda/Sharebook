@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Moq;
 using ShareBook.Application.Books;
 using ShareBook.Application.Shared;
 using ShareBook.Domain.Books;
