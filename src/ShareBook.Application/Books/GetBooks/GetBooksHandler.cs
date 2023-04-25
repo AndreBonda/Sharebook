@@ -1,13 +1,12 @@
 using MediatR;
-using ShareBook.API.Books;
 
 namespace ShareBook.Application.Books.GetBooks;
 
 public class GetBooksHandler : IRequestHandler<GetBooksQuery, IEnumerable<BookVM>>
 {
-    private readonly IBookQueries _bookQueries;
+    private readonly BookQueries _bookQueries;
 
-    public GetBooksHandler(IBookQueries bookQueries)
+    public GetBooksHandler(BookQueries bookQueries)
     {
         _bookQueries = bookQueries;
     }

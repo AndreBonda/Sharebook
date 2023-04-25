@@ -59,5 +59,4 @@ public class Book : Entity<Guid>
     {
         return new Book(owner, title, author, pages, labels);
     }
-
 }

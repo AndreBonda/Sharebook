@@ -1,17 +1,18 @@
 using Microsoft.EntityFrameworkCore;
+using ShareBook.Application.Shared;
 using ShareBook.Domain.Books;
 
 namespace ShareBook.Infrastructure;
 
-public class AppDbContext : DbContext
+public class AppDbContext : DbContext, IAppDbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
     }
 
-    public DbSet<Book> Books { get; set; }
+    public DbSet<Book> Books => Set<Book>();
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder) 
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Book>()
             .Property(e => e.Labels)

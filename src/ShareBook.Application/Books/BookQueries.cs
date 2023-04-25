@@ -1,14 +1,14 @@
 using ShareBook.Application.Books.GetBooks;
 using Microsoft.EntityFrameworkCore;
-using ShareBook.API.Books;
+using ShareBook.Application.Shared;
 
-namespace ShareBook.Infrastructure.Queries;
+namespace ShareBook.Application.Books;
 
-public class BookQueries : IBookQueries
+public class BookQueries
 {
-    private readonly AppDbContext _ctx;
+    private readonly IAppDbContext _ctx;
 
-    public BookQueries(AppDbContext ctx)
+    public BookQueries(IAppDbContext ctx)
     {
         _ctx = ctx;
     }

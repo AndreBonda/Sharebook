@@ -1,9 +1,9 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using ShareBook.API.Books;
+using ShareBook.Application.Books;
+using ShareBook.Application.Shared;
 using ShareBook.Domain.Books;
 using ShareBook.Infrastructure;
-using ShareBook.Infrastructure.Queries;
 using ShareBook.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,8 +25,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddMediatR(typeof(ShareBook.Application.StartUp).Assembly);
 
 // Services
+builder.Services.AddScoped<IAppDbContext, AppDbContext>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
-builder.Services.AddScoped<IBookQueries, BookQueries>();
+builder.Services.AddScoped<BookQueries>();
 
 var app = builder.Build();
 
