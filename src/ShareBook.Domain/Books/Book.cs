@@ -15,12 +15,14 @@ public class Book : Entity<Guid>
     private List<string> _labels { get; set; }
 
     protected Book(
+        Guid id,
         string owner,
         string title,
         string author,
         int pages,
-        IEnumerable<string> labels) : base(Guid.NewGuid(), DateTime.UtcNow)
+        IEnumerable<string> labels) : base(id, DateTime.UtcNow)
     {
+        if(id == Guid.Empty) throw new ArgumentException(nameof(id));
         if (string.IsNullOrWhiteSpace(owner)) throw new ArgumentNullException(nameof(owner));
         if (string.IsNullOrWhiteSpace(title)) throw new ArgumentNullException(nameof(title));
         if (string.IsNullOrWhiteSpace(author)) throw new ArgumentNullException(nameof(author));
@@ -51,12 +53,13 @@ public class Book : Entity<Guid>
     }
 
     public static Book New(
+        Guid id,
         string owner,
         string title,
         string author,
         int pages,
         IEnumerable<string> labels = null)
     {
-        return new Book(owner, title, author, pages, labels);
+        return new Book(id, owner, title, author, pages, labels);
     }
 }

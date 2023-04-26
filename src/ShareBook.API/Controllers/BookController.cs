@@ -39,7 +39,10 @@ public class BookController : ControllerBase
     [HttpPost("book")]
     public async Task<IActionResult> Create(CreateBookDto dto)
     {
-        Guid id = await _mediator.Send(new CreateBookCmd(
+        var id = Guid.NewGuid();
+
+        await _mediator.Send(new CreateBookCmd(
+            id,
             dto.Owner,
             dto.Title,
             dto.Author,

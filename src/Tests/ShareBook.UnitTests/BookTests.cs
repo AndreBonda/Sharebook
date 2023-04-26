@@ -5,11 +5,17 @@ namespace ShareBook.UnitTests;
 [TestFixture]
 public class BookTests
 {
+    [Test]
+    public void New_ThrowsException_IfGuidIsEmpty()
+    {
+        Assert.Throws<ArgumentException>(() => Book.New(Guid.Empty, "valid_owner", "valid_title", "valid_author", 1));
+    }
+
     [TestCase("","valid_title","valid_author",1)]
     [TestCase(" ", "valid_title", "valid_author", 1)]
     [TestCase(null, "valid_title", "valid_author", 1)]
     public void New_ThrowsArgumentNullException_IfOwnerIsNullOrEmptyOrWhiteSpaces(string owner, string title, string author, int pages) {
-        Assert.Throws<ArgumentNullException>(() => Book.New(owner, title, author, pages));
+        Assert.Throws<ArgumentNullException>(() => Book.New(Guid.NewGuid(),owner, title, author, pages));
     }
 
     [TestCase("valid_owner", "", "valid_author", 1)]
@@ -17,7 +23,7 @@ public class BookTests
     [TestCase("valid_owner", null, "valid_author", 1)]
     public void New_ThrowsArgumentNullException_IfTitleIsNullOrEmptyOrWhiteSpaces(string owner, string title, string author, int pages)
     {
-        Assert.Throws<ArgumentNullException>(() => Book.New(owner, title, author, pages));
+        Assert.Throws<ArgumentNullException>(() => Book.New(Guid.NewGuid(),owner, title, author, pages));
     }
 
     [TestCase("valid_owner", "valid_title", "", 1)]
@@ -25,14 +31,14 @@ public class BookTests
     [TestCase("valid_owner", "valid_title", null, 1)]
     public void New_ThrowsArgumentNullException_IfAuthorIsNullOrEmptyOrWhiteSpaces(string owner, string title, string author, int pages)
     {
-        Assert.Throws<ArgumentNullException>(() => Book.New(owner, title, author, pages));
+        Assert.Throws<ArgumentNullException>(() => Book.New(Guid.NewGuid(),owner, title, author, pages));
     }
 
     [TestCase("valid_owner", "valid_title", "valid_author", 0)]
     [TestCase("valid_owner", "valid_title", "valid_author", -1)]
     public void New_ThrowsArgumentOutOfRangeException_IfPagesAreLessThanOne(string owner, string title, string author, int pages)
     {
-        Assert.Throws<ArgumentOutOfRangeException>(() => Book.New(owner, title, author, pages));
+        Assert.Throws<ArgumentOutOfRangeException>(() => Book.New(Guid.NewGuid(),owner, title, author, pages));
     }
 
     [Test]
@@ -40,7 +46,9 @@ public class BookTests
     {
         var emptyGuid = Guid.Empty;
         
-        var book = Book.New("valid_owner", 
+        var book = Book.New(
+            Guid.NewGuid(),
+            "valid_owner", 
             "valid_title", 
             "valid_author", 
             1, 
@@ -60,7 +68,9 @@ public class BookTests
     [Test]
     public void New_CreateNewBook_IgnoringDuplicateLabels()
     {
-        var book = Book.New("valid_owner",
+        var book = Book.New(
+            Guid.NewGuid(),
+            "valid_owner",
             "valid_title",
             "valid_author",
             1,
@@ -73,7 +83,9 @@ public class BookTests
     [TestCase(null)]
     public void AddLabel_ThrowsArgumentNullExceptions_IfLabelIsNullOrWhiteSpaces(string label)
     {
-        var book = Book.New("valid_owner",
+        var book = Book.New(
+            Guid.NewGuid(),
+            "valid_owner",
             "valid_title",
             "valid_author",
             1,
@@ -85,7 +97,9 @@ public class BookTests
     [Test]
     public void AddLabel_IfValidInput()
     {
-        var book = Book.New("valid_owner",
+        var book = Book.New(
+            Guid.NewGuid(),
+            "valid_owner",
             "valid_title",
             "valid_author",
             1,
@@ -99,7 +113,9 @@ public class BookTests
     [Test]
     public void AddLabel_DoesNotAdd_IfLabelAlreadyExists()
     {
-        var book = Book.New("valid_owner",
+        var book = Book.New(
+            Guid.NewGuid(),
+            "valid_owner",
             "valid_title",
             "valid_author",
             1,
@@ -113,7 +129,9 @@ public class BookTests
     [Test]
     public void RemoveLabel_DoesNotRemove_IfLabelIsNotContained()
     {
-        var book = Book.New("valid_owner",
+        var book = Book.New(
+            Guid.NewGuid(),
+            "valid_owner",
             "valid_title",
             "valid_author",
             1,
@@ -127,7 +145,9 @@ public class BookTests
     [Test]
     public void RemoveLabel_IfValidInput()
     {
-        var book = Book.New("valid_owner",
+        var book = Book.New(
+            Guid.NewGuid(),
+            "valid_owner",
             "valid_title",
             "valid_author",
             1,

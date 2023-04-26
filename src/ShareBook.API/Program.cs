@@ -22,7 +22,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 });
 
 // MediatR
-builder.Services.AddMediatR(typeof(ShareBook.Application.StartUp).Assembly);
+// builder.Services.AddMediatR(typeof(ShareBook.Application.StartUp).Assembly);
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssembly(typeof(ShareBook.Application.StartUp).Assembly);
+});
 
 // Services
 builder.Services.AddScoped<IAppDbContext, AppDbContext>();

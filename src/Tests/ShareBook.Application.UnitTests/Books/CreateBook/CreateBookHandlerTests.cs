@@ -17,7 +17,9 @@ public class CreateBookHandlerTests
     [Test]
     public async Task Handle_CreateNewBook()
     {
+        var id = Guid.NewGuid();
         var command = new CreateBookCmd(
+            id,
             "owner",
             "title",
             "author",
@@ -26,9 +28,10 @@ public class CreateBookHandlerTests
 
         var handler = new CreateBookHandler(_repo.Object);
 
-        var guid = await handler.Handle(command, new CancellationToken());
+        await handler.Handle(command, new CancellationToken());
 
         _repo.Verify(x => x.AddAsync(It.Is<Book>(b => 
+            b.Id == id &&
             b.Owner == "owner" &&
             b.Title == "title" &&
             b.Author == "author" &&
@@ -36,7 +39,6 @@ public class CreateBookHandlerTests
             b.Labels.Count() == 1 &&
             b.Labels.First() == "label")));
         _repo.Verify(x => x.SaveAsync());
-        Assert.That(guid, Is.Not.EqualTo(Guid.Empty));
     }
 
 
