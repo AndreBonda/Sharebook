@@ -26,9 +26,9 @@ public class BookQueriesTests
     {
         await _ctx.Books.AddRangeAsync(new List<Book>()
         {
-                    Book.New(Guid.NewGuid(),"OwnerX", "TitleX", "AuthorX", 2, new string[] {"LabelX"}),
-                    Book.New(Guid.NewGuid(), "OwnerY", "TitleY", "AuthorY", 2, new string[] {"LabelY"}),
-                    Book.New(Guid.NewGuid(), "OwnerZ", "TitleZ", "AuthorZ", 2, new string[] {"LabelZ"})
+                    Book.New(Guid.NewGuid(),"OwnerX", "TitleX", "AuthorX", 2, true, new string[] {"LabelX"}),
+                    Book.New(Guid.NewGuid(), "OwnerY", "TitleY", "AuthorY", 2, true, new string[] {"LabelY"}),
+                    Book.New(Guid.NewGuid(), "OwnerZ", "TitleZ", "AuthorZ", 2, true, new string[] {"LabelZ"})
         });
         await _ctx.SaveChangesAsync();
     }

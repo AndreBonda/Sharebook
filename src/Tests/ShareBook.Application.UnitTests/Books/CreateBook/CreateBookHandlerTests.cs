@@ -24,6 +24,7 @@ public class CreateBookHandlerTests
             "title",
             "author",
             1,
+            true,
             new string[] { "label" });
 
         var handler = new CreateBookHandler(_repo.Object);
@@ -36,10 +37,9 @@ public class CreateBookHandlerTests
             b.Title == "title" &&
             b.Author == "author" &&
             b.Pages == 1 &&
+            b.SharedByOwner == true &&
             b.Labels.Count() == 1 &&
             b.Labels.First() == "label")));
         _repo.Verify(x => x.SaveAsync());
     }
-
-
 }

@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using ShareBook.Domain.Books;
 
 namespace ShareBook.Application.Books.CreateBook;
@@ -20,6 +21,7 @@ public class CreateBookHandler : IRequestHandler<CreateBookCmd>
             request.Title,
             request.Author,
             request.Pages,
+            request.SharedByOwner,
             request.Labels
         );
         await _repo.AddAsync(book);

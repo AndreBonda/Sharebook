@@ -47,6 +47,7 @@ public class BookController : ControllerBase
             dto.Title,
             dto.Author,
             dto.Pages,
+            dto.SharedByOwner,
             dto.Labels
         ));
 

@@ -8,4 +8,5 @@ public record CreateBookCmd(
     string Title,
     string Author,
     int Pages,
+    bool SharedByOwner,
     IEnumerable<string> Labels) : IRequest;

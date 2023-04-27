@@ -13,6 +13,7 @@ public class Book : Entity<Guid>
         get { return _labels.AsEnumerable(); }
     }
     private List<string> _labels { get; set; }
+    public bool SharedByOwner { get; private set; }
 
     protected Book(
         Guid id,
@@ -20,24 +21,42 @@ public class Book : Entity<Guid>
         string title,
         string author,
         int pages,
+        bool sharedByOwner,
         IEnumerable<string> labels) : base(id, DateTime.UtcNow)
     {
-        if(id == Guid.Empty) throw new ArgumentException(nameof(id));
-        if (string.IsNullOrWhiteSpace(owner)) throw new ArgumentNullException(nameof(owner));
-        if (string.IsNullOrWhiteSpace(title)) throw new ArgumentNullException(nameof(title));
-        if (string.IsNullOrWhiteSpace(author)) throw new ArgumentNullException(nameof(author));
-        if (pages <= 0) throw new ArgumentOutOfRangeException(nameof(pages));
-
         Owner = owner;
         Title = title;
         Author = author;
         Pages = pages;
-        _labels = labels != null ?
-            labels.Distinct().ToList() :
-            new List<string>();
+        SharedByOwner = sharedByOwner;
+        SetupLabels(labels);
+
+        Validate();
     }
 
-    public void AddLabel(string label)
+    public void Update(string owner, string title, string author, int pages, bool sharedByOwner, IEnumerable<string> labels)
+    {
+        if(owner != Owner)
+            throw new ArgumentException("User is not the owner of this book");
+
+        Title = title;
+        Author = author;
+        Pages = Pages;
+        SharedByOwner = sharedByOwner;
+        SetupLabels(labels);
+
+        Validate();
+    }
+
+    private void SetupLabels(IEnumerable<string> labels)
+    {
+        _labels = new List<string>();
+
+        foreach(var label in labels)
+            AddLabel(label);
+    }
+
+    private void AddLabel(string label)
     {
         if (string.IsNullOrWhiteSpace(label))
             throw new ArgumentNullException(nameof(label));
@@ -46,10 +65,13 @@ public class Book : Entity<Guid>
             _labels.Add(label);
     }
 
-    public void RemoveLabel(string label)
-    {
-        if (_labels.Contains(label))
-            _labels.Remove(label);
+    // TODO: move validation outside
+    private void Validate() {
+        if (Id == Guid.Empty) throw new ArgumentException(nameof(Id));
+        if (string.IsNullOrWhiteSpace(Owner)) throw new ArgumentNullException(nameof(Owner));
+        if (string.IsNullOrWhiteSpace(Title)) throw new ArgumentNullException(nameof(Title));
+        if (string.IsNullOrWhiteSpace(Author)) throw new ArgumentNullException(nameof(Author));
+        if (Pages <= 0) throw new ArgumentOutOfRangeException(nameof(Pages));
     }
 
     public static Book New(
@@ -58,8 +80,9 @@ public class Book : Entity<Guid>
         string title,
         string author,
         int pages,
+        bool sharedByOwner,
         IEnumerable<string> labels = null)
     {
-        return new Book(id, owner, title, author, pages, labels);
+        return new Book(id, owner, title, author, pages, sharedByOwner, labels ?? Enumerable.Empty<string>());
     }
 }
