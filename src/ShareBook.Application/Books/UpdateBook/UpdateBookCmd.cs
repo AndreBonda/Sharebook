@@ -1,8 +1,8 @@
 using MediatR;
 
-namespace ShareBook.Application.Books.CreateBook;
+namespace ShareBook.Application.Books.UpdateBook;
 
-public record CreateBookCmd(
+public record UpdateBookCmd(
     Guid Id, 
     string CurrentUser,
     string Title,

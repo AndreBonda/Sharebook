@@ -1,3 +1,4 @@
+using ShareBook.Domain.Books.Exceptions;
 using ShareBook.Domain.Shared;
 
 namespace ShareBook.Domain.Books;
@@ -34,14 +35,14 @@ public class Book : Entity<Guid>
         Validate();
     }
 
-    public void Update(string owner, string title, string author, int pages, bool sharedByOwner, IEnumerable<string> labels)
+    public virtual void Update(string currentUser, string title, string author, int pages, bool sharedByOwner, IEnumerable<string> labels)
     {
-        if(owner != Owner)
-            throw new ArgumentException("User is not the owner of this book");
+        if(currentUser != Owner)
+            throw new UpdateBookUserNotOwnerException($"User {currentUser} is not the owner of the book {Id}");
 
         Title = title;
         Author = author;
-        Pages = Pages;
+        Pages = pages;
         SharedByOwner = sharedByOwner;
         SetupLabels(labels);
 

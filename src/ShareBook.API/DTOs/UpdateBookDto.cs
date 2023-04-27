@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ShareBook.API.DTOs;
 
-public class CreateBookDto
+public class UpdateBookDto
 {
     [MinLength(1)]
     public required string CurrentUser { get; set; } // TODO: Temporary until authentication is implemented.

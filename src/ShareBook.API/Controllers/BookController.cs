@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using ShareBook.API.DTOs;
 using ShareBook.Application.Books.CreateBook;
 using ShareBook.Application.Books.GetBooks;
+using ShareBook.Application.Books.UpdateBook;
 
 namespace ShareBook.API.Controllers;
 
@@ -43,7 +44,7 @@ public class BookController : ControllerBase
 
         await _mediator.Send(new CreateBookCmd(
             id,
-            dto.Owner,
+            dto.CurrentUser,
             dto.Title,
             dto.Author,
             dto.Pages,
@@ -52,5 +53,21 @@ public class BookController : ControllerBase
         ));
 
         return CreatedAtAction(nameof(GetById), new { id = id }, null);
+    }
+
+    [HttpPatch("book/{book_id}")]
+    public async Task<IActionResult> Update([FromRoute(Name = "book_id")] Guid bookId, UpdateBookDto dto)
+    {
+        await _mediator.Send(new UpdateBookCmd(
+            bookId,
+            dto.CurrentUser,
+            dto.Title,
+            dto.Author,
+            dto.Pages,
+            dto.SharedByOwner,
+            dto.Labels
+        ));
+
+        return CreatedAtAction(nameof(GetById), new { id = bookId }, null);
     }
 }

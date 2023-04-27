@@ -1,4 +1,5 @@
 using ShareBook.Domain.Books;
+using ShareBook.Domain.Books.Exceptions;
 
 namespace ShareBook.UnitTests;
 
@@ -80,5 +81,54 @@ public class BookTests
             new string[] { "label1", "label1" });
 
         Assert.That(book.Labels, Is.EquivalentTo(new string[] { "label1" }));
+    }
+
+    [Test]
+    public void Update_ThrowsUpdateBookUserNotOwnerException_IfCurrentUserIsNotTheBookOwner()
+    {
+        var book = Book.New(
+            Guid.NewGuid(),
+            "owner",
+            "title",
+            "author",
+            1,
+            true,
+            new string[] { "label1" });
+
+        Assert.Throws<UpdateBookUserNotOwnerException>(() => book.Update(
+            "not_the_owner",
+            "title",
+            "author",
+            1,
+            true,
+            new string[] { "label1" }
+        ));
+    }
+
+    [Test]
+    public void Update_UpdateFields_IfValidInputs()
+    {
+        var book = Book.New(
+            Guid.NewGuid(),
+            "owner",
+            "title",
+            "author",
+            1,
+            true,
+            new string[] { "label1" });
+
+         book.Update(
+            "owner",
+            "title_update",
+            "author_update",
+            2,
+            false,
+            new string[] { "label2" });
+
+        Assert.That(book.Title, Is.EqualTo("title_update"));
+        Assert.That(book.Author, Is.EqualTo("author_update"));
+        Assert.That(book.Pages, Is.EqualTo(2));
+        Assert.IsFalse(book.SharedByOwner);
+        Assert.That(book.Labels, Is.EquivalentTo(new string[] { "label2" }));
     }
 }
