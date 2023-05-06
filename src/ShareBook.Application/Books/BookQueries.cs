@@ -22,6 +22,6 @@ public class BookQueries
 
         return (
             await query.ToListAsync())
-            .Select(b => new BookVM(b.Id, b.Owner, b.Title, b.Author, b.Pages, b.Labels));
+            .Select(b => new BookVM(b.Id, b.Owner, b.Title, b.Author, b.Pages, b.SharedByOwner, b.Labels));
     }
 }

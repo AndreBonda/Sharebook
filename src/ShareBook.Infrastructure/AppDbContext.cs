@@ -11,6 +11,7 @@ public class AppDbContext : DbContext, IAppDbContext
     }
 
     public DbSet<Book> Books => Set<Book>();
+    public DbSet<LoanRequest> LoanRequests => Set<LoanRequest>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -20,5 +21,14 @@ public class AppDbContext : DbContext, IAppDbContext
                 v => string.Join(',', v),
                 v => v.Split(',', StringSplitOptions.RemoveEmptyEntries)
             );
+
+        // one-to-one fk: loanRequest --> Book
+        modelBuilder.Entity<Book>()
+            .OwnsOne<LoanRequest>("CurrentLoanRequest", x =>
+            {
+                x.WithOwner().HasForeignKey("BookId");
+            });
+
+        base.OnModelCreating(modelBuilder);
     }
 }

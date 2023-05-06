@@ -5,16 +5,14 @@ namespace ShareBook.Domain.Books;
 
 public class Book : Entity<Guid>
 {
+    private readonly List<string> _labels = new();
     public string Owner { get; private set; }
     public string Title { get; private set; }
     public string Author { get; private set; }
     public int Pages { get; private set; }
-    public IEnumerable<string> Labels
-    {
-        get { return _labels.AsEnumerable(); }
-    }
-    private List<string> _labels { get; set; }
+    public IEnumerable<string> Labels => _labels;
     public bool SharedByOwner { get; private set; }
+    private LoanRequest CurrentLoanRequest { get; set; }
 
     protected Book(
         Guid id,
@@ -30,6 +28,7 @@ public class Book : Entity<Guid>
         Author = author;
         Pages = pages;
         SharedByOwner = sharedByOwner;
+        CurrentLoanRequest = null;
         SetupLabels(labels);
 
         Validate();
@@ -49,9 +48,24 @@ public class Book : Entity<Guid>
         Validate();
     }
 
+    public void RequestNewLoan(string requestingUser)
+    {
+        if(!SharedByOwner)
+            throw new BookNotSharedByOwnerException($"This book {Id} is not shared");
+
+        if(requestingUser == Owner)
+            throw new BookOwnerCannotMakeALoanRequest($"User {requestingUser} is already the owner of this book {Id}");
+        
+        if(CurrentLoanRequest is not null) {
+            throw new LoanRequestAlreadyExistsException($"This book {Id} has already a loan request");
+        }
+
+        CurrentLoanRequest = LoanRequest.New(Guid.NewGuid(), requestingUser);
+    }
+
     private void SetupLabels(IEnumerable<string> labels)
     {
-        _labels = new List<string>();
+        _labels.Clear();
 
         foreach(var label in labels)
             AddLabel(label);

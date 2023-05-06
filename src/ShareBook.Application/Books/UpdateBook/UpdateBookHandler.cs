@@ -20,6 +20,7 @@ public class UpdateBookHandler : IRequestHandler<UpdateBookCmd>
         if(book is null)
             throw new NotFoundException(nameof(book), request.Id);
 
+        // TODO: gestire concorrenza
         book.Update(
             request.CurrentUser,
             request.Title,

@@ -12,11 +12,12 @@ public class BookTests
         Assert.Throws<ArgumentException>(() => Book.New(Guid.Empty, "valid_owner", "valid_title", "valid_author", 1, true));
     }
 
-    [TestCase("","valid_title","valid_author",1, true)]
+    [TestCase("", "valid_title", "valid_author", 1, true)]
     [TestCase(" ", "valid_title", "valid_author", 1, true)]
     [TestCase(null, "valid_title", "valid_author", 1, true)]
-    public void New_ThrowsArgumentNullException_IfOwnerIsNullOrEmptyOrWhiteSpaces(string owner, string title, string author, int pages, bool sharedByUser) {
-        Assert.Throws<ArgumentNullException>(() => Book.New(Guid.NewGuid(),owner, title, author, pages, sharedByUser));
+    public void New_ThrowsArgumentNullException_IfOwnerIsNullOrEmptyOrWhiteSpaces(string owner, string title, string author, int pages, bool sharedByUser)
+    {
+        Assert.Throws<ArgumentNullException>(() => Book.New(Guid.NewGuid(), owner, title, author, pages, sharedByUser));
     }
 
     [TestCase("valid_owner", "", "valid_author", 1, true)]
@@ -24,7 +25,7 @@ public class BookTests
     [TestCase("valid_owner", null, "valid_author", 1, true)]
     public void New_ThrowsArgumentNullException_IfTitleIsNullOrEmptyOrWhiteSpaces(string owner, string title, string author, int pages, bool sharedByUser)
     {
-        Assert.Throws<ArgumentNullException>(() => Book.New(Guid.NewGuid(),owner, title, author, pages, true));
+        Assert.Throws<ArgumentNullException>(() => Book.New(Guid.NewGuid(), owner, title, author, pages, true));
     }
 
     [TestCase("valid_owner", "valid_title", "", 1, true)]
@@ -32,28 +33,28 @@ public class BookTests
     [TestCase("valid_owner", "valid_title", null, 1, true)]
     public void New_ThrowsArgumentNullException_IfAuthorIsNullOrEmptyOrWhiteSpaces(string owner, string title, string author, int pages, bool sharedByUser)
     {
-        Assert.Throws<ArgumentNullException>(() => Book.New(Guid.NewGuid(),owner, title, author, pages, sharedByUser));
+        Assert.Throws<ArgumentNullException>(() => Book.New(Guid.NewGuid(), owner, title, author, pages, sharedByUser));
     }
 
     [TestCase("valid_owner", "valid_title", "valid_author", 0, true)]
     [TestCase("valid_owner", "valid_title", "valid_author", -1, true)]
     public void New_ThrowsArgumentOutOfRangeException_IfPagesAreLessThanOne(string owner, string title, string author, int pages, bool sharedByUser)
     {
-        Assert.Throws<ArgumentOutOfRangeException>(() => Book.New(Guid.NewGuid(),owner, title, author, pages, sharedByUser));
+        Assert.Throws<ArgumentOutOfRangeException>(() => Book.New(Guid.NewGuid(), owner, title, author, pages, sharedByUser));
     }
 
     [Test]
-    public void New_CreateNewBook_IfValidInputs() 
+    public void New_CreateNewBook_IfValidInputs()
     {
         var emptyGuid = Guid.Empty;
-        
+
         var book = Book.New(
             Guid.NewGuid(),
-            "valid_owner", 
-            "valid_title", 
-            "valid_author", 
+            "valid_owner",
+            "valid_title",
+            "valid_author",
             1,
-            true, 
+            true,
             new string[] { "label1", "label2" });
 
         Assert.That(book, Is.Not.Null);
@@ -117,18 +118,68 @@ public class BookTests
             true,
             new string[] { "label1" });
 
-         book.Update(
-            "owner",
-            "title_update",
-            "author_update",
-            2,
-            false,
-            new string[] { "label2" });
+        book.Update(
+           "owner",
+           "title_update",
+           "author_update",
+           2,
+           false,
+           new string[] { "label2" });
 
         Assert.That(book.Title, Is.EqualTo("title_update"));
         Assert.That(book.Author, Is.EqualTo("author_update"));
         Assert.That(book.Pages, Is.EqualTo(2));
         Assert.IsFalse(book.SharedByOwner);
         Assert.That(book.Labels, Is.EquivalentTo(new string[] { "label2" }));
+    }
+
+    [Test]
+    public void RequestNewLoan_ThrowsBookNotSharedByOwnerException_IfBookNotSharedByOwner()
+    {
+        var book = Book.New(
+            Guid.NewGuid(),
+            "owner_a",
+            "title_a",
+            "author_a",
+            2,
+            false,
+            new string[] { "label" }
+            );
+
+        Assert.Throws<BookNotSharedByOwnerException>(() => book.RequestNewLoan("user_c"));
+    }
+
+    [Test]
+    public void RequestNewLoan_ThrowsBookOwnerCannotMakeALoanRequest_IfOwnerMakeARequestForHisBook()
+    {
+        var book = Book.New(
+            Guid.NewGuid(),
+            "owner_a",
+            "title_a",
+            "author_a",
+            2,
+            true,
+            new string[] { "label" }
+            );
+
+        Assert.Throws<BookOwnerCannotMakeALoanRequest>(() => book.RequestNewLoan("owner_a"));
+    }
+
+    [Test]
+    public void RequestNewLoan_ThrowsLoanRequestAlreadyExistException_IfExistALoanRequestForBook()
+    {
+        var book = Book.New(
+            Guid.NewGuid(),
+            "owner_a",
+            "title_a",
+            "author_a",
+            2,
+            true,
+            new string[] { "label" }
+        );
+
+        book.RequestNewLoan("user_b");
+
+        Assert.Throws<LoanRequestAlreadyExistsException>(() => book.RequestNewLoan("user_b"));
     }
 }

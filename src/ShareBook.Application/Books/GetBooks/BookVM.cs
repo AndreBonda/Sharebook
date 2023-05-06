@@ -8,5 +8,6 @@ public record BookVM(
     string Title,
     string Author,
     int Pages,
+    bool SharedByOwner,
     IEnumerable<string> Labels
 );

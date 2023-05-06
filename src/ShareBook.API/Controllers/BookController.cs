@@ -55,11 +55,11 @@ public class BookController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = id }, null);
     }
 
-    [HttpPatch("book/{book_id}")]
-    public async Task<IActionResult> Update([FromRoute(Name = "book_id")] Guid bookId, UpdateBookDto dto)
+    [HttpPatch("book/{id}")]
+    public async Task<IActionResult> Update(Guid Id, UpdateBookDto dto)
     {
         await _mediator.Send(new UpdateBookCmd(
-            bookId,
+            Id,
             dto.CurrentUser,
             dto.Title,
             dto.Author,
@@ -68,6 +68,17 @@ public class BookController : ControllerBase
             dto.Labels
         ));
 
-        return CreatedAtAction(nameof(GetById), new { id = bookId }, null);
+        return CreatedAtAction(nameof(GetById), new { id = Id }, null);
     }
+
+    [HttpPatch("book/{book_id}/loan_request/{current_user}")]
+    public async Task<IActionResult> RequestLoan(
+        [FromRoute(Name = "book_id")] Guid BookId,
+        [FromRoute(Name = "current_user")] string CurrentUser)
+    {
+        await _mediator.Send(new CreateLoanRequestCmd(BookId, CurrentUser));
+
+        return CreatedAtAction(nameof(GetById), new { id = BookId }, null);
+    }
+
 }

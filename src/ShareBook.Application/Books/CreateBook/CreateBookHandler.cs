@@ -6,11 +6,11 @@ namespace ShareBook.Application.Books.CreateBook;
 
 public class CreateBookHandler : IRequestHandler<CreateBookCmd>
 {
-    private readonly IBookRepository _repo;
+    private readonly IBookRepository _repository;
 
-    public CreateBookHandler(IBookRepository repo)
+    public CreateBookHandler(IBookRepository repository)
     {
-        _repo = repo;
+        _repository = repository;
     }
     
     public async Task Handle(CreateBookCmd request, CancellationToken cancellationToken)
@@ -24,7 +24,7 @@ public class CreateBookHandler : IRequestHandler<CreateBookCmd>
             request.SharedByOwner,
             request.Labels
         );
-        await _repo.AddAsync(book);
-        await _repo.SaveAsync();
+        await _repository.AddAsync(book);
+        await _repository.SaveAsync();
     }
 }
