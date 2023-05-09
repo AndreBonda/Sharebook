@@ -9,8 +9,9 @@ public class BookTests
     private Book _book;
 
     [SetUp]
-    protected void SetUp() {
-        _book = Book.New(Guid.NewGuid(), "current_user", "title", "author", 50, true, new[] { "label1" });
+    protected void SetUp()
+    {
+        _book = Book.New(Guid.NewGuid(), "owner_user", "title", "author", 50, true, new[] { "label1" });
     }
 
     [Test]
@@ -92,7 +93,7 @@ public class BookTests
     }
 
     [Test]
-    public void Update_ThrowsUpdateBookUserNotOwnerException_IfCurrentUserIsNotTheBookOwner()
+    public void Update_ThrowsUserIsNotBookOwnerException_IfCurrentUserIsNotTheBookOwner()
     {
         var book = Book.New(
             Guid.NewGuid(),
@@ -103,7 +104,7 @@ public class BookTests
             true,
             new string[] { "label1" });
 
-        Assert.Throws<UpdateBookUserNotOwnerException>(() => book.Update(
+        Assert.Throws<UserIsNotBookOwnerException>(() => book.Update(
             "not_the_owner",
             "title",
             "author",
@@ -188,9 +189,28 @@ public class BookTests
     [Test]
     public void RequestNewLoan_ThrowsRemoveSharingWithCurrentLoanRequestException_IfShareByOnwerIsSetToFalseAndCurrentLoanRequestExists()
     {
-        _book.RequestNewLoan("random_user");
+        _book.RequestNewLoan("requesting_user");
 
         Assert.Throws<RemoveSharingWithCurrentLoanRequestException>(() =>
-        _book.Update("current_user", "title", "author", 50, false, new string[] { "label1" }));
+        _book.Update("owner_user", "title", "author", 50, false, new string[] { "label1" }));
     }
+
+    [Test]
+    public void RefuseLoanRequest_ThrowsUserIsNotBookOwnerException_IfCurrentUserIsNotTheBookOwner()
+    {
+        Assert.Throws<UserIsNotBookOwnerException>(() => _book.RefuseLoanRequest("not_owner_user"));
+    }
+
+    [Test]
+    public void RefuseLoanRequest_ThrowsNonExistingLoanRequestException_IfLoanRequestDoesNotExist()
+    {
+        Assert.Throws<NonExistingLoanRequestException>(() => _book.RefuseLoanRequest("owner_user"));
+    }
+
+    [Test]
+    [Ignore("Waiting for AcceptLoanRequest method in book entity")]
+    public void RefuseLoanRequest_ThrowsLoanRequestAlreadyAccepted_IfLoanRequestIdAlreadyAccepted()
+    {
+    }
+
 }

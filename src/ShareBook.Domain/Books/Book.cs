@@ -34,10 +34,10 @@ public class Book : Entity<Guid>
         Validate();
     }
 
-    public virtual void Update(string currentUser, string title, string author, int pages, bool sharedByOwner, IEnumerable<string> labels)
+    public virtual void Update(string bookOwner, string title, string author, int pages, bool sharedByOwner, IEnumerable<string> labels)
     {
-        if(currentUser != Owner)
-            throw new UpdateBookUserNotOwnerException($"User {currentUser} is not the owner of the book {Id}");
+        if (bookOwner != Owner)
+            throw new UserIsNotBookOwnerException($"User {bookOwner} is not the owner of this book {Id}");
 
         Title = title;
         Author = author;
@@ -50,24 +50,36 @@ public class Book : Entity<Guid>
 
     public void RequestNewLoan(string requestingUser)
     {
-        if(!SharedByOwner)
+        if (!SharedByOwner)
             throw new BookNotSharedByOwnerException($"This book {Id} is not shared");
 
-        if(requestingUser == Owner)
+        if (requestingUser == Owner)
             throw new BookOwnerCannotMakeALoanRequest($"User {requestingUser} is already the owner of this book {Id}");
-        
-        if(CurrentLoanRequest is not null) {
+
+        if (CurrentLoanRequest is not null)
+        {
             throw new LoanRequestAlreadyExistsException($"This book {Id} has already a loan request");
         }
 
         CurrentLoanRequest = LoanRequest.New(Guid.NewGuid(), requestingUser);
     }
 
+    public void RefuseLoanRequest(string bookOwner)
+    {
+        if(bookOwner != Owner)
+            throw new UserIsNotBookOwnerException($"User {bookOwner} is not the owner of this book {Id}");
+        
+        if(CurrentLoanRequest is null)
+            throw new NonExistingLoanRequestException($"There is not any loan request for this book {Id}");
+
+        CurrentLoanRequest = null;
+    }
+
     private void SetupLabels(IEnumerable<string> labels)
     {
         _labels.Clear();
 
-        foreach(var label in labels)
+        foreach (var label in labels)
             AddLabel(label);
     }
 
@@ -81,7 +93,8 @@ public class Book : Entity<Guid>
     }
 
     // TODO: move validation outside
-    private void Validate() {
+    private void Validate()
+    {
         if (Id == Guid.Empty) throw new ArgumentException(nameof(Id));
         if (string.IsNullOrWhiteSpace(Owner)) throw new ArgumentNullException(nameof(Owner));
         if (string.IsNullOrWhiteSpace(Title)) throw new ArgumentNullException(nameof(Title));
