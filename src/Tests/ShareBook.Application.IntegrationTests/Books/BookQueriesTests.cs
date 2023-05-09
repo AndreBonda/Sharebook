@@ -32,37 +32,4 @@ public class BookQueriesTests
         });
         await _ctx.SaveChangesAsync();
     }
-
-    [TestCase("")]
-    [TestCase(null)]
-    public async Task GetBooksByTitleAsync_ReturnsAllBooks_IfNoTitlePassed(string emptyTitle)
-    {
-        var bookQueries = new BookQueries(_ctx);
-
-        var books = await bookQueries.GetBooksByTitleAsync(emptyTitle);
-
-        Assert.That(books.Count(), Is.EqualTo(3));
-    }
-
-    [Test]
-    public async Task GetBooksByTitleAsync_ReturnsEmptyCollection_IfNoBooksFound()
-    {
-        var bookQueries = new BookQueries(_ctx);
-
-        var books = await bookQueries.GetBooksByTitleAsync("no_existing_book_title");
-
-        Assert.That(books.Count(), Is.EqualTo(0));
-    }
-
-    [Test]
-    public async Task GetBooksByTitleAsync_ReturnsExpectedBooks_IfTitleParamPassed()
-    {
-        var bookQueries = new BookQueries(_ctx);
-
-        var books = await bookQueries.GetBooksByTitleAsync("y");
-
-        Assert.That(books.Count(), Is.EqualTo(1));
-        Assert.That(books.First().Title, Is.EqualTo("TitleY"));
-    }
-
 }

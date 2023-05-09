@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ShareBook.Infrastructure;
@@ -11,9 +12,11 @@ using ShareBook.Infrastructure;
 namespace ShareBook.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230509065635_Adding foreign key to LoanRequest")]
+    partial class AddingforeignkeytoLoanRequest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,7 +38,7 @@ namespace ShareBook.Infrastructure.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("createdAt");
 
                     b.Property<string>("Labels")
                         .HasColumnType("text")
@@ -51,21 +54,21 @@ namespace ShareBook.Infrastructure.Migrations
 
                     b.Property<bool>("SharedByOwner")
                         .HasColumnType("boolean")
-                        .HasColumnName("shared_by_owner");
+                        .HasColumnName("sharedByOwner");
 
                     b.Property<string>("Title")
                         .HasColumnType("text")
                         .HasColumnName("title");
 
                     b.HasKey("Id")
-                        .HasName("pk_books");
+                        .HasName("pK_books");
 
                     b.ToTable("books", (string)null);
                 });
 
             modelBuilder.Entity("ShareBook.Domain.Books.Book", b =>
                 {
-                    b.OwnsOne("ShareBook.Domain.Books.LoanRequest", "CurrentLoanRequest", b1 =>
+                    b.OwnsOne("ShareBook.Domain.Books.LoanRequest", "LoanRequest", b1 =>
                         {
                             b1.Property<Guid>("BookId")
                                 .HasColumnType("uuid")
@@ -73,19 +76,19 @@ namespace ShareBook.Infrastructure.Migrations
 
                             b1.Property<DateTime>("CreatedAt")
                                 .HasColumnType("timestamp with time zone")
-                                .HasColumnName("current_loan_request_created_at");
+                                .HasColumnName("loanRequest_CreatedAt");
 
                             b1.Property<Guid>("Id")
                                 .HasColumnType("uuid")
-                                .HasColumnName("current_loan_request_id");
+                                .HasColumnName("loanRequest_Id");
 
                             b1.Property<string>("RequestingUser")
                                 .HasColumnType("text")
-                                .HasColumnName("current_loan_request_requesting_user");
+                                .HasColumnName("loanRequest_RequestingUser");
 
                             b1.Property<int>("Status")
                                 .HasColumnType("integer")
-                                .HasColumnName("current_loan_request_status");
+                                .HasColumnName("loanRequest_Status");
 
                             b1.HasKey("BookId");
 
@@ -93,10 +96,10 @@ namespace ShareBook.Infrastructure.Migrations
 
                             b1.WithOwner()
                                 .HasForeignKey("BookId")
-                                .HasConstraintName("fk_books_books_id");
+                                .HasConstraintName("fK_books_books_id");
                         });
 
-                    b.Navigation("CurrentLoanRequest");
+                    b.Navigation("LoanRequest");
                 });
 #pragma warning restore 612, 618
         }

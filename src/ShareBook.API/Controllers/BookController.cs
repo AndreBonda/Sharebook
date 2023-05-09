@@ -56,10 +56,10 @@ public class BookController : ControllerBase
     }
 
     [HttpPatch("book/{id}")]
-    public async Task<IActionResult> Update(Guid Id, UpdateBookDto dto)
+    public async Task<IActionResult> Update(Guid id, UpdateBookDto dto)
     {
         await _mediator.Send(new UpdateBookCmd(
-            Id,
+            id,
             dto.CurrentUser,
             dto.Title,
             dto.Author,
@@ -68,7 +68,7 @@ public class BookController : ControllerBase
             dto.Labels
         ));
 
-        return CreatedAtAction(nameof(GetById), new { id = Id }, null);
+        return CreatedAtAction(nameof(GetById), new { id = id }, null);
     }
 
     [HttpPatch("book/{book_id}/loan_request/{current_user}")]

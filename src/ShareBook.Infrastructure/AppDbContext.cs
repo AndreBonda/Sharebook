@@ -24,10 +24,7 @@ public class AppDbContext : DbContext, IAppDbContext
 
         // one-to-one fk: loanRequest --> Book
         modelBuilder.Entity<Book>()
-            .OwnsOne<LoanRequest>("CurrentLoanRequest", x =>
-            {
-                x.WithOwner().HasForeignKey("BookId");
-            });
+            .OwnsOne<LoanRequest>("CurrentLoanRequest");
 
         base.OnModelCreating(modelBuilder);
     }

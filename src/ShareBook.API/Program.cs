@@ -4,7 +4,9 @@ using ShareBook.Application.Books;
 using ShareBook.Application.Shared;
 using ShareBook.Domain.Books;
 using ShareBook.Infrastructure;
+using ShareBook.Infrastructure.Queries;
 using ShareBook.Infrastructure.Repositories;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +20,9 @@ builder.Services.AddSwaggerGen();
 // Postgres
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnectionString"));
+    options
+        .UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnectionString"))
+        .UseSnakeCaseNamingConvention();
 });
 
 // MediatR
@@ -31,7 +35,7 @@ builder.Services.AddMediatR(cfg =>
 // Services
 builder.Services.AddScoped<IAppDbContext, AppDbContext>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
-builder.Services.AddScoped<BookQueries>();
+builder.Services.AddScoped<IBookQueries, BookQueries>();
 
 var app = builder.Build();
 

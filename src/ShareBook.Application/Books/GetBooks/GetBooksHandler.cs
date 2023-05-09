@@ -4,9 +4,9 @@ namespace ShareBook.Application.Books.GetBooks;
 
 public class GetBooksHandler : IRequestHandler<GetBooksQuery, IEnumerable<BookVM>>
 {
-    private readonly BookQueries _bookQueries;
+    private readonly IBookQueries _bookQueries;
 
-    public GetBooksHandler(BookQueries bookQueries)
+    public GetBooksHandler(IBookQueries bookQueries)
     {
         _bookQueries = bookQueries;
     }
