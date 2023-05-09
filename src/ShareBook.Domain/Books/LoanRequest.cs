@@ -1,5 +1,4 @@
-using ShareBook.Domain.Books.Exceptions;
-using ShareBook.Domain.Shared;
+using ShareBook.Domain.Shared.Primitives;
 
 namespace ShareBook.Domain.Books;
 
@@ -11,7 +10,7 @@ public class LoanRequest : Entity<Guid>
         ACCEPTED
     }
 
-    private LoanRequest(Guid id, string requestingUser) : base(id, DateTime.UtcNow)
+    private LoanRequest(Guid id, string requestingUser) : base(id)
     {
         RequestingUser = requestingUser;
         Status = LoanRequestStatus.WAITING_FOR_ACCEPTANCE;

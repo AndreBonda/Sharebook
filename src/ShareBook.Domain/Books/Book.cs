@@ -1,5 +1,5 @@
 using ShareBook.Domain.Books.Exceptions;
-using ShareBook.Domain.Shared;
+using ShareBook.Domain.Shared.Primitives;
 
 namespace ShareBook.Domain.Books;
 
@@ -21,7 +21,7 @@ public class Book : Entity<Guid>
         string author,
         int pages,
         bool sharedByOwner,
-        IEnumerable<string> labels) : base(id, DateTime.UtcNow)
+        IEnumerable<string> labels) : base(id)
     {
         Owner = owner;
         Title = title;

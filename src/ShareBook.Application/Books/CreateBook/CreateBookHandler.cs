@@ -1,5 +1,4 @@
 using MediatR;
-using Microsoft.Extensions.Logging;
 using ShareBook.Domain.Books;
 
 namespace ShareBook.Application.Books.CreateBook;
