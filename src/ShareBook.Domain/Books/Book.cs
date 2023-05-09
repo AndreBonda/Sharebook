@@ -87,6 +87,8 @@ public class Book : Entity<Guid>
         if (string.IsNullOrWhiteSpace(Title)) throw new ArgumentNullException(nameof(Title));
         if (string.IsNullOrWhiteSpace(Author)) throw new ArgumentNullException(nameof(Author));
         if (Pages <= 0) throw new ArgumentOutOfRangeException(nameof(Pages));
+        if (SharedByOwner is false && CurrentLoanRequest is not null)
+            throw new RemoveSharingWithCurrentLoanRequestException($"This book {Id} has a loan request in progess.");
     }
 
     public static Book New(

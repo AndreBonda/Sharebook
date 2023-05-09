@@ -6,6 +6,13 @@ namespace ShareBook.UnitTests;
 [TestFixture]
 public class BookTests
 {
+    private Book _book;
+
+    [SetUp]
+    protected void SetUp() {
+        _book = Book.New(Guid.NewGuid(), "current_user", "title", "author", 50, true, new[] { "label1" });
+    }
+
     [Test]
     public void New_ThrowsException_IfGuidIsEmpty()
     {
@@ -134,6 +141,19 @@ public class BookTests
     }
 
     [Test]
+    public void Update_ThrowRemoveSharingWithLoanRequst_IfShareByOwnerIsSetToFalseAndCurrentLoanRequestIsNotNull()
+    {
+        var book = Book.New(
+            Guid.NewGuid(),
+            "owner",
+            "title",
+            "author",
+            1,
+            true,
+            new string[] { "label1" });
+    }
+
+    [Test]
     public void RequestNewLoan_ThrowsBookNotSharedByOwnerException_IfBookNotSharedByOwner()
     {
         var book = Book.New(
@@ -166,20 +186,11 @@ public class BookTests
     }
 
     [Test]
-    public void RequestNewLoan_ThrowsLoanRequestAlreadyExistException_IfExistALoanRequestForBook()
+    public void RequestNewLoan_ThrowsRemoveSharingWithCurrentLoanRequestException_IfShareByOnwerIsSetToFalseAndCurrentLoanRequestExists()
     {
-        var book = Book.New(
-            Guid.NewGuid(),
-            "owner_a",
-            "title_a",
-            "author_a",
-            2,
-            true,
-            new string[] { "label" }
-        );
+        _book.RequestNewLoan("random_user");
 
-        book.RequestNewLoan("user_b");
-
-        Assert.Throws<LoanRequestAlreadyExistsException>(() => book.RequestNewLoan("user_b"));
+        Assert.Throws<RemoveSharingWithCurrentLoanRequestException>(() =>
+        _book.Update("current_user", "title", "author", 50, false, new string[] { "label1" }));
     }
 }

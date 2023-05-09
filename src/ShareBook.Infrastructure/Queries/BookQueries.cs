@@ -33,6 +33,7 @@ public class BookQueries : IBookQueries
         queryBuilder.Append(@"
         select
         id,
+        owner,
         title,
         author,
         pages,
