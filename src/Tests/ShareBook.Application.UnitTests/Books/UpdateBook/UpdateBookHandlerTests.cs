@@ -10,10 +10,6 @@ public class UpdateBookHandlerTests
 {
     private Mock<IBookRepository> _repo;
 
-    public interface IBook{
-        void Dumb();
-    }
-
     [SetUp]
     public void SetUp() {
         _repo = new Mock<IBookRepository>();

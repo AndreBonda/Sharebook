@@ -1,5 +1,4 @@
 using MediatR;
-using Microsoft.Extensions.Logging;
 using ShareBook.Domain.Books;
 using ShareBook.Domain.Shared.Exceptions;
 

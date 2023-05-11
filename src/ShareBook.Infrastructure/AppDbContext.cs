@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using ShareBook.Application.Shared;
 using ShareBook.Domain.Books;
+using ShareBook.Domain.Shippings;
 
 namespace ShareBook.Infrastructure;
 
@@ -12,6 +13,7 @@ public class AppDbContext : DbContext, IAppDbContext
 
     public DbSet<Book> Books => Set<Book>();
     public DbSet<LoanRequest> LoanRequests => Set<LoanRequest>();
+    public DbSet<Shipping> Shippings => Set<Shipping>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -22,9 +24,12 @@ public class AppDbContext : DbContext, IAppDbContext
                 v => v.Split(',', StringSplitOptions.RemoveEmptyEntries)
             );
 
-        // one-to-one fk: loanRequest --> Book
         modelBuilder.Entity<Book>()
             .OwnsOne<LoanRequest>("CurrentLoanRequest");
+
+        modelBuilder.Entity<Book>()
+            .HasMany<Shipping>()
+            .WithOne();
 
         base.OnModelCreating(modelBuilder);
     }

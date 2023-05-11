@@ -1,7 +1,8 @@
 using ShareBook.Domain.Books;
 using ShareBook.Domain.Books.Exceptions;
+using static ShareBook.Domain.Books.LoanRequest;
 
-namespace ShareBook.UnitTests;
+namespace ShareBook.UnitTests.Books;
 
 [TestFixture]
 public class BookTests
@@ -74,7 +75,7 @@ public class BookTests
         Assert.That(book.Pages, Is.EqualTo(1));
         Assert.IsTrue(book.SharedByOwner);
         Assert.That(book.Labels, Is.EquivalentTo(new string[] { "label1", "label2" }));
-
+        Assert.That(book.RequestStatus(), Is.Null);
     }
 
     [Test]
@@ -142,7 +143,7 @@ public class BookTests
     }
 
     [Test]
-    public void Update_ThrowRemoveSharingWithLoanRequst_IfShareByOwnerIsSetToFalseAndCurrentLoanRequestIsNotNull()
+    public void Update_ThrowsRemoveSharingWithLoanRequst_IfShareByOwnerIsSetToFalseAndCurrentLoanRequestIsNotNull()
     {
         var book = Book.New(
             Guid.NewGuid(),
@@ -152,6 +153,15 @@ public class BookTests
             1,
             true,
             new string[] { "label1" });
+    }
+
+    [Test]
+    public void Update_ThrowsRemoveSharingWithCurrentLoanRequestException_IfShareByOnwerIsSetToFalseAndCurrentLoanRequestExists()
+    {
+        _book.RequestNewLoan("requesting_user");
+
+        Assert.Throws<RemoveSharingWithCurrentLoanRequestException>(() =>
+        _book.Update("owner_user", "title", "author", 50, false, new string[] { "label1" }));
     }
 
     [Test]
@@ -187,16 +197,15 @@ public class BookTests
     }
 
     [Test]
-    public void RequestNewLoan_ThrowsRemoveSharingWithCurrentLoanRequestException_IfShareByOnwerIsSetToFalseAndCurrentLoanRequestExists()
+    public void RequestNewLoan_SetCurrentLoanRequestStatus_IfLoanRequestIsCreated()
     {
-        _book.RequestNewLoan("requesting_user");
+        _book.RequestNewLoan("not_owner_user");
 
-        Assert.Throws<RemoveSharingWithCurrentLoanRequestException>(() =>
-        _book.Update("owner_user", "title", "author", 50, false, new string[] { "label1" }));
+        Assert.That(_book.RequestStatus(), Is.EqualTo(LoanRequestStatus.WAITING_FOR_ACCEPTANCE));
     }
 
     [Test]
-    public void RefuseLoanRequest_ThrowsUserIsNotBookOwnerException_IfCurrentUserIsNotTheBookOwner()
+    public void RefuseLoanRequest_ThrowsUserIsNotBookOwnerException_IfUserIsNotTheBookOwner()
     {
         Assert.Throws<UserIsNotBookOwnerException>(() => _book.RefuseLoanRequest("not_owner_user"));
     }
@@ -208,9 +217,41 @@ public class BookTests
     }
 
     [Test]
-    [Ignore("Waiting for AcceptLoanRequest method in book entity")]
-    public void RefuseLoanRequest_ThrowsLoanRequestAlreadyAccepted_IfLoanRequestIdAlreadyAccepted()
+    public void RefuseLoanRequest_ThrowsLoanRequestAlreadyAcceptedException_IfLoanRequestIdAlreadyAccepted()
     {
+        _book.RequestNewLoan("not_owner_user");
+        _book.AcceptLoanRequest("owner_user");
+
+        Assert.Throws<LoanRequestAlreadyAcceptedException>(() => _book.AcceptLoanRequest("owner_user"));
     }
 
+    [Test]
+    public void RefuseLoanRequest_SetCurrentLoanRequestStatusToNull_IfLoanRequestIsRefused()
+    {
+        _book.RequestNewLoan("not_owner_user");
+        _book.RefuseLoanRequest("owner_user");
+
+        Assert.That(_book.RequestStatus(), Is.Null);
+    }
+
+    [Test]
+    public void AcceptLoanRequest_ThrowsUserIsNotBookOwnerException_IfUserIsNotTheBookOwner()
+    {
+        Assert.Throws<UserIsNotBookOwnerException>(() => _book.AcceptLoanRequest("not_owner_user"));
+    }
+
+    [Test]
+    public void AcceptLoanRequest_ThrowsNonExistingLoanRequestException_IfLoanRequestDoesNotExist()
+    {
+        Assert.Throws<NonExistingLoanRequestException>(() => _book.AcceptLoanRequest("owner_user"));
+    }
+
+    [Test]
+    public void AcceptLoanRequest_SetCurrentLoanRequestStatusToAccepted_IfLoanRequestIsAccepted()
+    {
+        _book.RequestNewLoan("not_owner_user");
+        _book.AcceptLoanRequest("owner_user");
+
+        Assert.That(_book.RequestStatus(), Is.EqualTo(LoanRequestStatus.ACCEPTED));
+    }
 }

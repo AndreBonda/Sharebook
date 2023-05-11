@@ -1,9 +1,10 @@
 using ShareBook.Domain.Books.Exceptions;
 using ShareBook.Domain.Shared.Primitives;
+using static ShareBook.Domain.Books.LoanRequest;
 
 namespace ShareBook.Domain.Books;
 
-public class Book : Entity<Guid>
+public class Book : Entity<Guid>, IAggregateRoot
 {
     private readonly List<string> _labels = new();
     public string Owner { get; private set; }
@@ -61,18 +62,32 @@ public class Book : Entity<Guid>
             throw new LoanRequestAlreadyExistsException($"This book {Id} has already a loan request");
         }
 
-        CurrentLoanRequest = LoanRequest.New(Guid.NewGuid(), requestingUser);
+        CurrentLoanRequest = LoanRequest.New(Guid.NewGuid(), requestingUser); // ==> Crea un uncommitted event
     }
 
     public void RefuseLoanRequest(string bookOwner)
     {
-        if(bookOwner != Owner)
+        if (bookOwner != Owner)
             throw new UserIsNotBookOwnerException($"User {bookOwner} is not the owner of this book {Id}");
-        
-        if(CurrentLoanRequest is null)
+
+        if (CurrentLoanRequest is null)
             throw new NonExistingLoanRequestException($"There is not any loan request for this book {Id}");
+        
+        if(CurrentLoanRequest.IsAccepted())
+            throw new LoanRequestAlreadyAcceptedException($"This loan request is already accepted");
 
         CurrentLoanRequest = null;
+    }
+
+    public virtual void AcceptLoanRequest(string bookOwner)
+    {
+        if (bookOwner != Owner)
+            throw new UserIsNotBookOwnerException($"User {bookOwner} is not the owner of this book {Id}");
+
+        if (CurrentLoanRequest is null)
+            throw new NonExistingLoanRequestException($"There is not any loan request for this book {Id}");
+
+        CurrentLoanRequest.Accept();
     }
 
     private void SetupLabels(IEnumerable<string> labels)
@@ -91,6 +106,8 @@ public class Book : Entity<Guid>
         if (!_labels.Contains(label))
             _labels.Add(label);
     }
+
+    public LoanRequestStatus? RequestStatus() => CurrentLoanRequest?.Status;
 
     // TODO: move validation outside
     private void Validate()

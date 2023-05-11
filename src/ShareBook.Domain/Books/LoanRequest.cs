@@ -1,3 +1,4 @@
+using ShareBook.Domain.Books.Exceptions;
 using ShareBook.Domain.Shared.Primitives;
 
 namespace ShareBook.Domain.Books;
@@ -18,6 +19,15 @@ public class LoanRequest : Entity<Guid>
 
     public LoanRequestStatus Status { get; private set; }
     public string RequestingUser { get; private set; }
+
+    public bool IsAccepted() => Status == LoanRequestStatus.ACCEPTED;
+
+    public void Accept() {
+        if(Status is LoanRequestStatus.ACCEPTED)
+            throw new LoanRequestAlreadyAcceptedException($"This loan request is already accepted");
+
+        Status = LoanRequestStatus.ACCEPTED;
+    }
 
     public static LoanRequest New(
         Guid id,
