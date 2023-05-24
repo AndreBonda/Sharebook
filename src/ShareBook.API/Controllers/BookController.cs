@@ -1,9 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using ShareBook.API.DTOs;
-using ShareBook.Application.Books.CreateBook;
-using ShareBook.Application.Books.GetBooks;
-using ShareBook.Application.Books.UpdateBook;
+using ShareBook.Application.Books;
 
 namespace ShareBook.API.Controllers;
 

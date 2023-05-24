@@ -1,4 +1,5 @@
 using ShareBook.Domain.Books;
+using ShareBook.Domain.Books.Events;
 using ShareBook.Domain.Books.Exceptions;
 using static ShareBook.Domain.Books.LoanRequest;
 
@@ -247,11 +248,19 @@ public class BookTests
     }
 
     [Test]
-    public void AcceptLoanRequest_SetCurrentLoanRequestStatusToAccepted_IfLoanRequestIsAccepted()
+    public void AcceptLoanRequest_UpdatesBook_IfLoanRequestIsAccepted()
     {
         _book.RequestNewLoan("not_owner_user");
         _book.AcceptLoanRequest("owner_user");
 
+        var events = _book.Events();
+
         Assert.That(_book.RequestStatus(), Is.EqualTo(LoanRequestStatus.ACCEPTED));
+        Assert.That(events, Has.Exactly(1).TypeOf<LoanRequestAcceptedEvent>());
+
+        var @event = ((LoanRequestAcceptedEvent)_book.Events().First());
+
+        Assert.That(@event.BookId, Is.EqualTo(_book.Id));
+        Assert.That(@event.DateOcurred, Is.EqualTo(DateTime.UtcNow).Within(1).Minutes);
     }
 }

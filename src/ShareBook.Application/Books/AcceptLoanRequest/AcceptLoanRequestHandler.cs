@@ -4,20 +4,15 @@ using ShareBook.Domain.Books;
 using ShareBook.Domain.Shared.Exceptions;
 using ShareBook.Domain.Shippings;
 
-namespace ShareBook.Application.Books.CreateBook;
+namespace ShareBook.Application.Books;
 
 public class AcceptLoanRequestHandler : IRequestHandler<AcceptLoanRequestCmd>
 {
     private readonly IBookRepository _bookRepository;
-    private readonly IShippingRepository _shippingRepository;
-    private readonly AcceptLoanRequestService _acceptLoanRequestService;
 
-    public AcceptLoanRequestHandler(IBookRepository bookRepository, IShippingRepository shippingRepository,
-    AcceptLoanRequestService acceptLoanRequestService)
+    public AcceptLoanRequestHandler(IBookRepository bookRepository)
     {
         _bookRepository = bookRepository;
-        _shippingRepository = shippingRepository;
-        _acceptLoanRequestService = acceptLoanRequestService;
     }
 
     public async Task Handle(AcceptLoanRequestCmd request, CancellationToken cancellationToken)
@@ -27,8 +22,8 @@ public class AcceptLoanRequestHandler : IRequestHandler<AcceptLoanRequestCmd>
         if(book is null)
             throw new NotFoundException("Book not found");
 
-        var shipping = _acceptLoanRequestService.AcceptLoanRequest(book, request.BookOwner);
-        await _shippingRepository.AddAsync(shipping);
+        book.AcceptLoanRequest(request.BookOwner); 
+
         await _bookRepository.SaveAsync();
     }
 }

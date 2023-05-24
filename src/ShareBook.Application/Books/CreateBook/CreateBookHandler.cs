@@ -1,7 +1,7 @@
 using MediatR;
 using ShareBook.Domain.Books;
 
-namespace ShareBook.Application.Books.CreateBook;
+namespace ShareBook.Application.Books;
 
 public class CreateBookHandler : IRequestHandler<CreateBookCmd>
 {

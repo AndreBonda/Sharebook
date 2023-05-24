@@ -1,5 +1,5 @@
 using Moq;
-using ShareBook.Application.Books.CreateBook;
+using ShareBook.Application.Books;
 using ShareBook.Domain.Books;
 
 namespace ShareBook.Application.UnitTests.Books.CreateBook;

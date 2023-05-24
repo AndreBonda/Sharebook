@@ -2,7 +2,7 @@ using ShareBook.Domain.Shared.Primitives;
 
 namespace ShareBook.Domain.Shippings;
 
-public class Shipping : Entity<Guid>, IAggregateRoot
+public class Shipping : AggregateRoot<Guid>
 {
     protected Shipping(Guid id, Guid bookId) : base(id)
     {

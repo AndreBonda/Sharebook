@@ -2,18 +2,11 @@ using System.Text;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
 using ShareBook.Application.Books;
-using ShareBook.Application.Books.GetBooks;
 
 namespace ShareBook.Infrastructure.Queries;
 
 public class BookQueries : IBookQueries
 {
-    private class UserProva
-    {
-        public Guid Id { get; set; }
-        public string Username { get; set; }
-    }
-
     private readonly AppDbContext _ctx;
 
     public BookQueries(AppDbContext ctx)
@@ -23,10 +16,6 @@ public class BookQueries : IBookQueries
 
     public async Task<IEnumerable<BookVM>> GetBooksByTitleAsync(string title)
     {
-        // var parameters = new DynamicParameters();
-        // parameters.Add("@Username", $"%{title.ToLower()}%");
-        // string query = "SELECT * FROM userprova where lower(username) like @Username";
-
         var queryBuilder = new StringBuilder();
         var queryParam = new DynamicParameters();
 

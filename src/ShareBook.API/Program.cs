@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ShareBook.Application.Books;
 using ShareBook.Application.Shared;
 using ShareBook.Domain.Books;
+using ShareBook.Domain.Shared;
 using ShareBook.Domain.Shippings;
 using ShareBook.Infrastructure;
 using ShareBook.Infrastructure.Queries;
@@ -38,7 +39,7 @@ builder.Services.AddScoped<IAppDbContext, AppDbContext>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IShippingRepository, ShippingRepository>();
 builder.Services.AddScoped<IBookQueries, BookQueries>();
-builder.Services.AddScoped<AcceptLoanRequestService>();
+builder.Services.AddScoped<DomainEventDispatcher>();
 
 var app = builder.Build();
 

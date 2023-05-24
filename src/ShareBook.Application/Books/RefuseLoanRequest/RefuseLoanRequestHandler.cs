@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using ShareBook.Domain.Books;
 using ShareBook.Domain.Shared.Exceptions;
 
-namespace ShareBook.Application.Books.CreateBook;
+namespace ShareBook.Application.Books;
 
 public class RefuseLoanRequestHandler : IRequestHandler<RefuseLoanRequestCmd>
 {

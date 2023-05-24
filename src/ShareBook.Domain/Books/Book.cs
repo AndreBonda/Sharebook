@@ -1,10 +1,11 @@
+using ShareBook.Domain.Books.Events;
 using ShareBook.Domain.Books.Exceptions;
 using ShareBook.Domain.Shared.Primitives;
 using static ShareBook.Domain.Books.LoanRequest;
 
 namespace ShareBook.Domain.Books;
 
-public class Book : Entity<Guid>, IAggregateRoot
+public class Book : AggregateRoot<Guid>
 {
     private readonly List<string> _labels = new();
     public string Owner { get; private set; }
@@ -72,8 +73,8 @@ public class Book : Entity<Guid>, IAggregateRoot
 
         if (CurrentLoanRequest is null)
             throw new NonExistingLoanRequestException($"There is not any loan request for this book {Id}");
-        
-        if(CurrentLoanRequest.IsAccepted())
+
+        if (CurrentLoanRequest.IsAccepted())
             throw new LoanRequestAlreadyAcceptedException($"This loan request is already accepted");
 
         CurrentLoanRequest = null;
@@ -88,6 +89,8 @@ public class Book : Entity<Guid>, IAggregateRoot
             throw new NonExistingLoanRequestException($"There is not any loan request for this book {Id}");
 
         CurrentLoanRequest.Accept();
+
+        RegisterEvent(new LoanRequestAcceptedEvent { BookId = Id });
     }
 
     private void SetupLabels(IEnumerable<string> labels)

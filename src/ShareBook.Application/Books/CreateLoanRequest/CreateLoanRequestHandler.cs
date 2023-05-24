@@ -2,7 +2,7 @@ using MediatR;
 using ShareBook.Domain.Books;
 using ShareBook.Domain.Shared.Exceptions;
 
-namespace ShareBook.Application.Books.CreateBook;
+namespace ShareBook.Application.Books;
 
 public class CreateLoanRequestHandler : IRequestHandler<CreateLoanRequestCmd>
 {

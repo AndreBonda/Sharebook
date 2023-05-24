@@ -1,5 +1,5 @@
 using Moq;
-using ShareBook.Application.Books.UpdateBook;
+using ShareBook.Application.Books;
 using ShareBook.Domain.Books;
 using ShareBook.Domain.Shared.Exceptions;
 

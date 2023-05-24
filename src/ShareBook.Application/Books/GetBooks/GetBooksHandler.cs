@@ -1,6 +1,6 @@
 using MediatR;
 
-namespace ShareBook.Application.Books.GetBooks;
+namespace ShareBook.Application.Books;
 
 public class GetBooksHandler : IRequestHandler<GetBooksQuery, IEnumerable<BookVM>>
 {

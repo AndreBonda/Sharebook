@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using MediatR;
 
-namespace ShareBook.Application.Books.GetBooks;
+namespace ShareBook.Application.Books;
 
 public class BookVM
 {
