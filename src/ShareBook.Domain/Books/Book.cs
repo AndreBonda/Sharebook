@@ -90,7 +90,7 @@ public class Book : AggregateRoot<Guid>
 
         CurrentLoanRequest.Accept();
 
-        RegisterEvent(new LoanRequestAcceptedEvent { BookId = Id });
+        RaiseEvent(new LoanRequestAcceptedEvent { BookId = Id });
     }
 
     private void SetupLabels(IEnumerable<string> labels)

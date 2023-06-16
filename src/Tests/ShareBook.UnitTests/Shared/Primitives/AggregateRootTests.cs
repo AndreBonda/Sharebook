@@ -12,35 +12,31 @@ public class AggregateRootTests
         {
         }
 
-        public void FakeRegister(DomainEvent @event) {
-            RegisterEvent(@event);
+        public void FakeRaise(DomainEvent @event) {
+            RaiseEvent(@event);
+        }
+
+        public IEnumerable<DomainEvent> FakeRealeaseEvents() {
+            return ReleaseEvents();
         }
     }
 
-    private Mock<DomainEvent> _domainEvent;
-    private FakeAggregateRoot _aggregateRoot;
-
-    [SetUp]
-    public void SetUp() {
-        _domainEvent = new Mock<DomainEvent>();
-        _aggregateRoot = new FakeAggregateRoot(Guid.NewGuid());
-    }
-
     [Test]
-    public void RegisterEvent_AddsEvent_WhenEventIsPassed()
+    public void RegisterEvent_ReleaseEvents_WhenEventIsPassed()
     {
-        _aggregateRoot.FakeRegister(_domainEvent.Object);
+        // Arrange
+        Mock<DomainEvent> domainEventOne = new();
+        Mock<DomainEvent> domainEventTwo = new();
+        FakeAggregateRoot sut = new FakeAggregateRoot(Guid.NewGuid());
 
-        Assert.That(_aggregateRoot.Events().Count(), Is.EqualTo(1));
-    }
+        // Act
+        sut.FakeRaise(domainEventOne.Object);
+        sut.FakeRaise(domainEventTwo.Object);
+        IEnumerable<DomainEvent> releasedEvents = sut.ReleaseEvents();
+        IEnumerable<DomainEvent> emptyReleasedEvents = sut.ReleaseEvents();
 
-    [Test]
-    public void ClearEvents_ClearsAllExistingEvents()
-    {
-        _aggregateRoot.FakeRegister(_domainEvent.Object);
-
-        _aggregateRoot.ClearEvents();
-
-        Assert.That(_aggregateRoot.Events().Count(), Is.EqualTo(0));
+        // Assert
+        Assert.That(releasedEvents.Count(), Is.EqualTo(2));
+        Assert.That(emptyReleasedEvents.Count(), Is.EqualTo(0));
     }
 }

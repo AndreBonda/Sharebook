@@ -253,12 +253,12 @@ public class BookTests
         _book.RequestNewLoan("not_owner_user");
         _book.AcceptLoanRequest("owner_user");
 
-        var events = _book.Events();
+        var events = _book.ReleaseEvents();
 
         Assert.That(_book.RequestStatus(), Is.EqualTo(LoanRequestStatus.ACCEPTED));
         Assert.That(events, Has.Exactly(1).TypeOf<LoanRequestAcceptedEvent>());
 
-        var @event = ((LoanRequestAcceptedEvent)_book.Events().First());
+        var @event = ((LoanRequestAcceptedEvent)events.First());
 
         Assert.That(@event.BookId, Is.EqualTo(_book.Id));
         Assert.That(@event.DateOcurred, Is.EqualTo(DateTime.UtcNow).Within(1).Minutes);

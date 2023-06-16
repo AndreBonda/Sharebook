@@ -12,13 +12,8 @@ public class DomainEventDispatcher
         _mediator = mediator;
     }
 
-    public async Task DispatchAndClearEventsAsync(IEnumerable<IEventContainer> eventContainers)
+    public async Task DispatchEventsAsync(IEnumerable<DomainEvent> events)
     {
-        IEnumerable<DomainEvent> events = eventContainers.SelectMany(ec => ec.Events()).ToArray();
-
-        foreach (var ec in eventContainers)
-            ec.ClearEvents();
-
         foreach (var @event in events)
             await _mediator.Publish(@event);
     }
