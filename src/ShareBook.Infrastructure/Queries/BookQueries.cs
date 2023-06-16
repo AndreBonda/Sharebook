@@ -2,6 +2,7 @@ using System.Text;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
 using ShareBook.Application.Books;
+using ShareBook.Application.Books.ViewModels;
 
 namespace ShareBook.Infrastructure.Queries;
 
@@ -47,5 +48,31 @@ public class BookQueries : IBookQueries
         );
 
         return books;
+    }
+
+    public async Task<BookVM> GetBookByIdAsync(Guid id)
+    {
+        var queryParam = new DynamicParameters();
+
+        string query = @"
+        select
+        id,
+        owner,
+        title,
+        author,
+        pages,
+        labels,
+        shared_by_owner ,
+        current_loan_request_requesting_user,
+        current_loan_request_status
+        from books
+        where id = @Id";
+
+        using var connection = _ctx.Database.GetDbConnection();
+        queryParam.Add("Id", id);
+        return await connection.QueryFirstOrDefaultAsync<BookVM>(
+            sql: query,
+            param: queryParam
+        );
     }
 }

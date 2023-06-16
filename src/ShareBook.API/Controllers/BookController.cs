@@ -20,9 +20,11 @@ public class BookController : ControllerBase
     }
 
     [HttpGet("book/{id}")]
-    public Task<IActionResult> GetById(Guid id)
+    public async Task<IActionResult> GetById(Guid id)
     {
-        throw new NotImplementedException();
+        var book = await _mediator.Send(new GetBookQuery(id));
+        
+        return Ok(book);
     }
 
     [HttpGet("books")]
