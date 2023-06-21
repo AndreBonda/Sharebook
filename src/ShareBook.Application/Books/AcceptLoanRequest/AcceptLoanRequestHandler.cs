@@ -1,10 +1,8 @@
 using MediatR;
-using Microsoft.Extensions.Logging;
 using ShareBook.Domain.Books;
 using ShareBook.Domain.Shared;
 using ShareBook.Domain.Shared.Exceptions;
 using ShareBook.Domain.Shared.Primitives;
-using ShareBook.Domain.Shippings;
 
 namespace ShareBook.Application.Books;
 
