@@ -5,6 +5,7 @@ using ShareBook.Application.Shared;
 using ShareBook.Domain.Books;
 using ShareBook.Domain.Shared;
 using ShareBook.Domain.Shippings;
+using ShareBook.Domain.Users;
 using ShareBook.Infrastructure;
 using ShareBook.Infrastructure.Queries;
 using ShareBook.Infrastructure.Repositories;
@@ -37,6 +38,7 @@ builder.Services.AddMediatR(cfg =>
 // Services
 builder.Services.AddScoped<IAppDbContext, AppDbContext>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IShippingRepository, ShippingRepository>();
 builder.Services.AddScoped<IBookQueries, BookQueries>();
 builder.Services.AddScoped<DomainEventDispatcher>();

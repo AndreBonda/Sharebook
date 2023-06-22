@@ -38,7 +38,7 @@ public class AppDbContext : DbContext, IAppDbContext
 
         #region User
         modelBuilder.Entity<User>()
-            .OwnsOne<Email>("_email")
+            .OwnsOne<Email>(u => u.Email)
             .Property(e => e.Value)
             .HasColumnName("Email");
 

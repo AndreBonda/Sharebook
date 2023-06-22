@@ -15,6 +15,9 @@ public class UserRepository : BaseRepository<User, Guid>, IUserRepository
         await _ctx.Users.AddAsync(entity);
     }
 
+    public async Task<User> GetByEmailAsync(string email) =>
+        await _ctx.Users.FirstOrDefaultAsync(u => u.Email.Value == email);
+
     public override async Task<User> GetByIdAsync(Guid id) => 
         await _ctx.Users.FirstOrDefaultAsync(b => b.Id == id);
 }

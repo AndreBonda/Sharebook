@@ -5,14 +5,12 @@ namespace ShareBook.Domain.Users;
 
 public class User : AggregateRoot<Guid>
 {
-    private readonly Email _email;
+    public Email Email { get; private set; }
     private readonly Password _password;
-    public string Email => _email.Value;
-    public string Password => _password.PasswordHash;
 
     public User(Guid id, Email email, Password password) : base(id)
     {
-        _email = email;
+        Email = email;
         _password = password;
 
         Validate();
@@ -25,7 +23,7 @@ public class User : AggregateRoot<Guid>
 
     private void Validate() {
         if (Id == Guid.Empty) throw new ArgumentException(nameof(Id));
-        ArgumentNullException.ThrowIfNull(_email, nameof(_email));
+        ArgumentNullException.ThrowIfNull(Email, nameof(Email));
         ArgumentNullException.ThrowIfNull(_password, nameof(_password));
     }
 }

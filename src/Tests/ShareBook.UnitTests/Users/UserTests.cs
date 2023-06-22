@@ -60,7 +60,7 @@ public class UserTests
         var user = new User(guid, email, password);
 
         // Assert
-        Assert.That(user.Email, Is.EqualTo("valid_email"));
+        Assert.That(user.Email.Value, Is.EqualTo("valid_email"));
     }
 
     [Test]
