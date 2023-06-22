@@ -5,22 +5,16 @@ using ShareBook.Domain.Shared.ValueObjects;
 namespace ShareBook.UnitTests.Shared.ValueObjects;
 
 [TestFixture]
-public class PasswordTests {
+public class PasswordTests
+{
     private Mock<IHashingProvider> _hashingProvider = new();
 
     [OneTimeSetUp]
-    public void OneTimeSetUp() {
-        (byte[] Salt, byte[] Hash) returnValue = new(
-            new byte[1] { 0x00 }, 
-            new byte[1] { 0x01 });
-
+    public void OneTimeSetUp()
+    {
         _hashingProvider
             .Setup(p => p.Hash(It.IsAny<string>()))
-            .Returns(returnValue);
-
-        _hashingProvider
-            .Setup(p => p.CheckHash(It.IsAny<string>(), It.IsAny<byte[]>(), It.IsAny<byte[]>()))
-            .Returns(true);
+            .Returns("Hashed_password");
     }
 
     [Test]
@@ -78,35 +72,53 @@ public class PasswordTests {
     }
 
     [Test]
-    public void Constructor_ValidInputs_SetSaltAndHash()
-    {
-        var password = new Password("AAbb11**", _hashingProvider.Object);
-
-        Assert.That(password.PasswordSalt, Is.EqualTo(new byte[1] { 0x00 }));
-        Assert.That(password.PasswordHash, Is.EqualTo(new byte[1] { 0x01 }));
-    }
-
-    [Test]
-    public void Constructor_PasswordSaltNull_ThrowsArgumentException()
-    {
-        Assert.Throws<ArgumentException>(() => new Password(null, new byte[1] { 0x01 }, _hashingProvider.Object));
-    }
-
-    [Test]
-    public void Constructor_PasswordSaltEmpty_ThrowsArgumentException()
-    {
-        Assert.Throws<ArgumentException>(() => new Password(new byte[0], new byte[1] { 0x01 }, _hashingProvider.Object));
-    }
-
-    [Test]
     public void Constructor_PasswordHashNull_ThrowsArgumentException()
     {
-        Assert.Throws<ArgumentException>(() => new Password(new byte[1] { 0x00 }, null, _hashingProvider.Object));
+        Assert.Throws<ArgumentException>(() => new Password(null, _hashingProvider.Object));
     }
 
     [Test]
     public void Constructor_PasswordHashEmpty_ThrowsArgumentException()
     {
-        Assert.Throws<ArgumentException>(() => new Password(new byte[1] { 0x00 }, new byte[0], _hashingProvider.Object));
+        Assert.Throws<ArgumentException>(() => new Password(string.Empty, _hashingProvider.Object));
+    }
+
+    [Test]
+    public void Constructor_ValidInputs_SetHashedPassword()
+    {
+        var password = new Password("AAbb11**", _hashingProvider.Object);
+
+        Assert.That(password.PasswordHash, Is.EqualTo("Hashed_password"));
+    }
+
+    [Test]
+    public void VerifyPassword_MatchingPassword_ReturnsTrue() {
+        // Arrange
+        _hashingProvider.Setup(x => x.Hash(It.IsAny<string>()))
+            .Returns("Hashed_password");
+        
+        // Act
+        var password = new Password("Matching_plain_text_pw1*", _hashingProvider.Object);
+
+        // Assert
+        Assert.True(password.VerifyPassword("Matching_plain_text_pw1*"));
+        _hashingProvider.Verify(x => x.Hash("Matching_plain_text_pw1*"));
+    }
+
+    [Test]
+    public void VerifyPassword_NonMatchingPassword_ReturnsFalse()
+    {
+        // Arrange
+        _hashingProvider.Setup(x => x.Hash(It.IsAny<string>()))
+            .Returns("Hashed_password");
+
+        // Act
+        var password = new Password("Non_matching_plain_text_pw1*", _hashingProvider.Object);
+        _hashingProvider.Setup(x => x.Hash(It.IsAny<string>()))
+            .Returns("Non_matching_hashed_password");
+
+        // Assert
+        Assert.False(password.VerifyPassword("Non_matching_plain_text_pw1*"));
+        _hashingProvider.Verify(x => x.Hash("Non_matching_plain_text_pw1*"));
     }
 }

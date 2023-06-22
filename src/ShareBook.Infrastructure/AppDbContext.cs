@@ -1,8 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using ShareBook.Application.Shared;
 using ShareBook.Domain.Books;
-using ShareBook.Domain.Shared;
-using ShareBook.Domain.Shared.Primitives;
 using ShareBook.Domain.Shippings;
 
 namespace ShareBook.Infrastructure;

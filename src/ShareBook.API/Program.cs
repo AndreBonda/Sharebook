@@ -8,7 +8,7 @@ using ShareBook.Domain.Shippings;
 using ShareBook.Infrastructure;
 using ShareBook.Infrastructure.Queries;
 using ShareBook.Infrastructure.Repositories;
-
+using ShareBook.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,6 +40,7 @@ builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IShippingRepository, ShippingRepository>();
 builder.Services.AddScoped<IBookQueries, BookQueries>();
 builder.Services.AddScoped<DomainEventDispatcher>();
+builder.Services.AddScoped<IHashingProvider, HashingProvider>();
 
 var app = builder.Build();
 
