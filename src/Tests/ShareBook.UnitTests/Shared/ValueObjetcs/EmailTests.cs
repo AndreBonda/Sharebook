@@ -36,6 +36,6 @@ public class EmailTests
     {
         var email = new Email("valid_email@gmail.com");
 
-        Assert.That(email.EmailValue, Is.EqualTo("valid_email@gmail.com"));
+        Assert.That(email.Value, Is.EqualTo("valid_email@gmail.com"));
     }
 }

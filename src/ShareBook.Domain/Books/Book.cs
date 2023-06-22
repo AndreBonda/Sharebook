@@ -112,7 +112,6 @@ public class Book : AggregateRoot<Guid>
 
     public LoanRequestStatus? RequestStatus() => CurrentLoanRequest?.Status;
 
-    // TODO: move validation outside
     private void Validate()
     {
         if (Id == Guid.Empty) throw new ArgumentException(nameof(Id));

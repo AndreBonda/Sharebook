@@ -7,7 +7,7 @@ public class Email : ValueObject
 {
     public const string VALUE_REGEX = @"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$";
 
-    public string EmailValue { get; private set; }
+    public virtual string Value { get; private set; }
 
     public Email(string email)
     {
@@ -16,11 +16,15 @@ public class Email : ValueObject
         if (!Regex.IsMatch(email, VALUE_REGEX))
             throw new ArgumentException(nameof(email));
 
-        EmailValue = email;
+        Value = email;
+    }
+
+    protected Email() {
+        // Useful for mocking
     }
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
-        yield return EmailValue;
+        yield return Value;
     }
 }

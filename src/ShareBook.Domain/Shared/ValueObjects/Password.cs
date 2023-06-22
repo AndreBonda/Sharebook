@@ -26,7 +26,12 @@ public class Password : ValueObject
         PasswordHash = hashingProvider.Hash(plainTextPassword);
     }
 
-    public bool VerifyPassword(string plainTextPassword) =>
+    protected Password()
+    {
+        // Useful for mocking
+    }
+
+    public virtual bool VerifyPassword(string plainTextPassword) =>
         PasswordHash == _hashingProvider.Hash(plainTextPassword);
 
     protected override IEnumerable<object> GetEqualityComponents()
