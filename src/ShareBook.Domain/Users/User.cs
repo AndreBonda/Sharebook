@@ -18,6 +18,9 @@ public class User : AggregateRoot<Guid>
         Validate();
     }
 
+    protected User()
+    {}
+
     public bool Authenticate(string plainTextPassword) => _password.VerifyPassword(plainTextPassword);
 
     private void Validate() {

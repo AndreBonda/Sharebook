@@ -11,6 +11,9 @@ public abstract class Entity<T>
         CreatedAt = DateTime.UtcNow;
     }
 
+    protected Entity()
+    {}
+
     public static bool operator ==(Entity<T> left, Entity<T> right)
     {
         if (left is null && right is null)

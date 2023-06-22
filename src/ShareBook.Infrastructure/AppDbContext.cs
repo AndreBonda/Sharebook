@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using ShareBook.Application.Shared;
 using ShareBook.Domain.Books;
+using ShareBook.Domain.Shared.ValueObjects;
 using ShareBook.Domain.Shippings;
+using ShareBook.Domain.Users;
 
 namespace ShareBook.Infrastructure;
 
@@ -14,9 +16,11 @@ public class AppDbContext : DbContext, IAppDbContext
     public DbSet<Book> Books => Set<Book>();
     public DbSet<LoanRequest> LoanRequests => Set<LoanRequest>();
     public DbSet<Shipping> Shippings => Set<Shipping>();
+    public DbSet<User> Users => Set<User>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        #region Book
         modelBuilder.Entity<Book>()
             .Property(e => e.Labels)
             .HasConversion(
@@ -30,6 +34,19 @@ public class AppDbContext : DbContext, IAppDbContext
         modelBuilder.Entity<Book>()
             .HasMany<Shipping>()
             .WithOne();
+        #endregion
+
+        #region User
+        modelBuilder.Entity<User>()
+            .OwnsOne<Email>("_email")
+            .Property(e => e.Value)
+            .HasColumnName("Email");
+
+        modelBuilder.Entity<User>()
+            .OwnsOne<Password>("_password")
+            .Property(p => p.PasswordHash)
+            .HasColumnName("Password");
+        #endregion
 
         base.OnModelCreating(modelBuilder);
     }

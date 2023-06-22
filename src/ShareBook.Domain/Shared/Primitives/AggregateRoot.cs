@@ -7,6 +7,9 @@ public abstract class AggregateRoot<T> : Entity<T>
     protected AggregateRoot(T id) : base(id)
     { }
 
+    protected AggregateRoot()
+    {}
+
     public IEnumerable<DomainEvent> ReleaseEvents()
     {
         List<DomainEvent> events = _events.ToList();
