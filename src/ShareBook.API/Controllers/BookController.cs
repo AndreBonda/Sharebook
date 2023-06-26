@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShareBook.API.DTOs;
 using ShareBook.Application.Books;
@@ -7,9 +8,9 @@ namespace ShareBook.API.Controllers;
 
 [ApiController]
 [Route("api")]
+[Authorize]
 public class BookController : ControllerBase
 {
-
     private readonly ILogger<BookController> _logger;
     private readonly IMediator _mediator;
 

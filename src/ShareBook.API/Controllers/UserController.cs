@@ -18,20 +18,18 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("user/sign-up")]
-    public async Task<IActionResult> SignUp(SignUpDto @params)
+    public async Task<IActionResult> SignUp(CreadentialsDto @params)
     {
         await _mediator.Send(new RegisterUserCmd(@params.Email, @params.Password));
 
         return Ok("User registration completed.");
     }
 
-    [HttpGet("books")]
-    public async Task<IActionResult> GetAll(string title)
+    [HttpPost("user/sign-in")]
+    public async Task<IActionResult> GetAll(CreadentialsDto @params)
     {
-        var books = await _mediator.Send(new GetBooksQuery(
-            title
-        ));
+        string jwt = await _mediator.Send(new AuthenticateUserQuery(@params.Email, @params.Password));
 
-        return Ok(books);
+        return Ok(jwt);
     }
 }

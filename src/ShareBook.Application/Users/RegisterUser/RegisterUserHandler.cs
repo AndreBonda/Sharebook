@@ -19,7 +19,6 @@ public class RegisterUserHandler : IRequestHandler<RegisterUserCmd>
     
     public async Task Handle(RegisterUserCmd request, CancellationToken cancellationToken)
     {
-        var prova = await _userRepository.GetByIdAsync(Guid.Parse("1adf8dfc-2cae-4093-893e-ba9e0381db9f"));
         if(await _userRepository.GetByEmailAsync(request.Email) is not null)
             throw new BadRequestException("Email already used");
 

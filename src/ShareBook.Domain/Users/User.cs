@@ -1,3 +1,4 @@
+using ShareBook.Domain.Shared;
 using ShareBook.Domain.Shared.Primitives;
 using ShareBook.Domain.Shared.ValueObjects;
 
@@ -19,7 +20,8 @@ public class User : AggregateRoot<Guid>
     protected User()
     {}
 
-    public bool Authenticate(string plainTextPassword) => _password.VerifyPassword(plainTextPassword);
+    public bool Authenticate(string plainTextPassword, IHashingProvider hashingProvider) => 
+        _password.VerifyPassword(plainTextPassword, hashingProvider);
 
     private void Validate() {
         if (Id == Guid.Empty) throw new ArgumentException(nameof(Id));

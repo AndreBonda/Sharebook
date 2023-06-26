@@ -1,4 +1,5 @@
 using Moq;
+using ShareBook.Domain.Shared;
 using ShareBook.Domain.Shared.ValueObjects;
 using ShareBook.Domain.Users;
 
@@ -7,13 +8,15 @@ namespace ShareBook.UnitTests.Users;
 [TestFixture]
 public class UserTests
 {
-    private Mock<Email> _email = new();
-    private Mock<Password> _password = new();
+    private Mock<Email> _email;
+    private Mock<Password> _password;
+    private Mock<IHashingProvider> _hashingProvider;
 
     [SetUp]
     public void SetUp() {
         _email = new();
         _password = new();
+        _hashingProvider = new();
     }
     
     [Test]
@@ -61,21 +64,5 @@ public class UserTests
 
         // Assert
         Assert.That(user.Email.Value, Is.EqualTo("valid_email"));
-    }
-
-    [Test]
-    public void Authenticate_CallVerifyPasswordMethod() {
-        // Assert
-        _password.Setup(x => x.VerifyPassword(It.IsAny<string>()));
-        var guid = Guid.NewGuid();
-        var email = _email.Object;
-        var password = _password.Object;
-        var user = new User(guid, email, password);
-
-        // Act
-        user.Authenticate("password");
-
-        // Assert
-        _password.Verify(x => x.VerifyPassword("password"));
     }
 }

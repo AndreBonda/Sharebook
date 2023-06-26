@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ShareBook.API.DTOs;
 
-public class SignUpDto
+public class CreadentialsDto
 {
     [Required]
     [RegularExpression(ShareBook.Domain.Shared.ValueObjects.Email.VALUE_REGEX)]

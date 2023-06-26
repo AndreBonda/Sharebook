@@ -9,7 +9,11 @@ using ShareBook.Domain.Users;
 using ShareBook.Infrastructure;
 using ShareBook.Infrastructure.Queries;
 using ShareBook.Infrastructure.Repositories;
-using ShareBook.Infrastructure.Services;
+using ShareBook.Infrastructure.Auth;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +39,25 @@ builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(ShareBook.Application.StartUp).Assembly);
 });
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true
+        };
+    });
+builder.Services.AddAuthorization();
+builder.Services.Configure<JwtOptions>(
+    builder.Configuration.GetSection("Jwt"));
+
 // Services
 builder.Services.AddScoped<IAppDbContext, AppDbContext>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
@@ -43,6 +66,19 @@ builder.Services.AddScoped<IShippingRepository, ShippingRepository>();
 builder.Services.AddScoped<IBookQueries, BookQueries>();
 builder.Services.AddScoped<DomainEventDispatcher>();
 builder.Services.AddScoped<IHashingProvider, HashingProvider>();
+builder.Services.AddScoped<IJwtProvider, JwtProvider>();
+
+// swagger
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+    {
+        Description = "Standard Authorization using Bearer scheme",
+        In = ParameterLocation.Header,
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+    });
+});
 
 var app = builder.Build();
 
@@ -54,7 +90,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
