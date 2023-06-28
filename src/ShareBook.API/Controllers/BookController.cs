@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShareBook.API.DTOs;
 using ShareBook.Application.Books;
+using ShareBook.Api.Extensions;
 
 namespace ShareBook.API.Controllers;
 
