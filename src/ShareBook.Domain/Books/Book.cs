@@ -8,7 +8,7 @@ namespace ShareBook.Domain.Books;
 public class Book : AggregateRoot<Guid>
 {
     private readonly List<string> _labels = new();
-    public string Owner { get; private set; }
+    public Guid OwnerId { get; private set; }
     public string Title { get; private set; }
     public string Author { get; private set; }
     public int Pages { get; private set; }
@@ -18,14 +18,14 @@ public class Book : AggregateRoot<Guid>
 
     protected Book(
         Guid id,
-        string owner,
+        Guid ownerId,
         string title,
         string author,
         int pages,
         bool sharedByOwner,
         IEnumerable<string> labels) : base(id)
     {
-        Owner = owner;
+        OwnerId = ownerId;
         Title = title;
         Author = author;
         Pages = pages;
@@ -36,10 +36,10 @@ public class Book : AggregateRoot<Guid>
         Validate();
     }
 
-    public virtual void Update(string bookOwner, string title, string author, int pages, bool sharedByOwner, IEnumerable<string> labels)
+    public virtual void Update(Guid bookOwnerId, string title, string author, int pages, bool sharedByOwner, IEnumerable<string> labels)
     {
-        if (bookOwner != Owner)
-            throw new UserIsNotBookOwnerException($"User {bookOwner} is not the owner of this book {Id}");
+        if (bookOwnerId != OwnerId)
+            throw new UserIsNotBookOwnerException($"User {bookOwnerId} is not the owner of this book {Id}");
 
         Title = title;
         Author = author;
@@ -50,26 +50,26 @@ public class Book : AggregateRoot<Guid>
         Validate();
     }
 
-    public void RequestNewLoan(string requestingUser)
+    public void RequestNewLoan(Guid requestingUserId)
     {
         if (!SharedByOwner)
             throw new BookNotSharedByOwnerException($"This book {Id} is not shared");
 
-        if (requestingUser == Owner)
-            throw new BookOwnerCannotMakeALoanRequest($"User {requestingUser} is already the owner of this book {Id}");
+        if (requestingUserId == OwnerId)
+            throw new BookOwnerCannotMakeALoanRequest($"User {requestingUserId} is already the owner of this book {Id}");
 
         if (CurrentLoanRequest is not null)
         {
             throw new LoanRequestAlreadyExistsException($"This book {Id} has already a loan request");
         }
 
-        CurrentLoanRequest = LoanRequest.New(Guid.NewGuid(), requestingUser); // ==> Crea un uncommitted event
+        CurrentLoanRequest = LoanRequest.New(Guid.NewGuid(), requestingUserId);
     }
 
-    public void RefuseLoanRequest(string bookOwner)
+    public void RefuseLoanRequest(Guid bookOwnerId)
     {
-        if (bookOwner != Owner)
-            throw new UserIsNotBookOwnerException($"User {bookOwner} is not the owner of this book {Id}");
+        if (bookOwnerId != OwnerId)
+            throw new UserIsNotBookOwnerException($"User {bookOwnerId} is not the owner of this book {Id}");
 
         if (CurrentLoanRequest is null)
             throw new NonExistingLoanRequestException($"There is not any loan request for this book {Id}");
@@ -80,10 +80,10 @@ public class Book : AggregateRoot<Guid>
         CurrentLoanRequest = null;
     }
 
-    public virtual void AcceptLoanRequest(string bookOwner)
+    public virtual void AcceptLoanRequest(Guid bookOwnerId)
     {
-        if (bookOwner != Owner)
-            throw new UserIsNotBookOwnerException($"User {bookOwner} is not the owner of this book {Id}");
+        if (bookOwnerId != OwnerId)
+            throw new UserIsNotBookOwnerException($"User {bookOwnerId} is not the owner of this book {Id}");
 
         if (CurrentLoanRequest is null)
             throw new NonExistingLoanRequestException($"There is not any loan request for this book {Id}");
@@ -115,7 +115,7 @@ public class Book : AggregateRoot<Guid>
     private void Validate()
     {
         if (Id == Guid.Empty) throw new ArgumentException(nameof(Id));
-        if (string.IsNullOrWhiteSpace(Owner)) throw new ArgumentNullException(nameof(Owner));
+        if (OwnerId == Guid.Empty) throw new ArgumentNullException(nameof(OwnerId));
         if (string.IsNullOrWhiteSpace(Title)) throw new ArgumentNullException(nameof(Title));
         if (string.IsNullOrWhiteSpace(Author)) throw new ArgumentNullException(nameof(Author));
         if (Pages <= 0) throw new ArgumentOutOfRangeException(nameof(Pages));
@@ -125,13 +125,13 @@ public class Book : AggregateRoot<Guid>
 
     public static Book New(
         Guid id,
-        string owner,
+        Guid ownerId,
         string title,
         string author,
         int pages,
         bool sharedByOwner,
         IEnumerable<string> labels = null)
     {
-        return new Book(id, owner, title, author, pages, sharedByOwner, labels ?? Enumerable.Empty<string>());
+        return new Book(id, ownerId, title, author, pages, sharedByOwner, labels ?? Enumerable.Empty<string>());
     }
 }

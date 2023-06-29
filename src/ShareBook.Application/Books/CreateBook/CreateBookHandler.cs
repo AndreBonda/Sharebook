@@ -16,7 +16,7 @@ public class CreateBookHandler : IRequestHandler<CreateBookCmd>
     {
         var book = Book.New(
             request.Id,
-            request.CurrentUser,
+            Guid.Empty,
             request.Title,
             request.Author,
             request.Pages,

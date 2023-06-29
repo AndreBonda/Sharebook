@@ -48,7 +48,7 @@ public class UpdateBookHandlerTests
 
         _repo.Verify(r => r.GetByIdAsync(bookId));
         bookReturnedFromRepository.Verify(b => b.Update(
-            "owner", 
+            Guid.Empty, //TODO:update
             "title_update", 
             "author_update", 
             4, 

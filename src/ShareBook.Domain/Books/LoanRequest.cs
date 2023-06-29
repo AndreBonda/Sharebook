@@ -11,14 +11,14 @@ public class LoanRequest : Entity<Guid>
         ACCEPTED
     }
 
-    private LoanRequest(Guid id, string requestingUser) : base(id)
+    private LoanRequest(Guid id, Guid requestingUserId) : base(id)
     {
-        RequestingUser = requestingUser;
+        RequestingUserId = requestingUserId;
         Status = LoanRequestStatus.WAITING_FOR_ACCEPTANCE;
     }
 
     public LoanRequestStatus Status { get; private set; }
-    public string RequestingUser { get; private set; }
+    public Guid RequestingUserId { get; private set; }
 
     public bool IsAccepted() => Status == LoanRequestStatus.ACCEPTED;
 
@@ -31,9 +31,9 @@ public class LoanRequest : Entity<Guid>
 
     public static LoanRequest New(
         Guid id,
-        string requestingUser
+        Guid requestingUserId
     )
     {
-        return new LoanRequest(id, requestingUser);
+        return new LoanRequest(id, requestingUserId);
     }
 }

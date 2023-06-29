@@ -20,7 +20,7 @@ public class CreateLoanRequestHandler : IRequestHandler<CreateLoanRequestCmd>
         if(book is null)
             throw new NotFoundException();
 
-        book.RequestNewLoan(request.RequestingUser);
+        book.RequestNewLoan(Guid.Empty);
         await _repository.SaveAsync();
     }
 }

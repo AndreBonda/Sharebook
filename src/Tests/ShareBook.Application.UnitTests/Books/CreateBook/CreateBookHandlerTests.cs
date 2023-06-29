@@ -33,7 +33,7 @@ public class CreateBookHandlerTests
 
         _repo.Verify(x => x.AddAsync(It.Is<Book>(b => 
             b.Id == id &&
-            b.Owner == "owner" &&
+            "" == "owner" && //TODO: update
             b.Title == "title" &&
             b.Author == "author" &&
             b.Pages == 1 &&

@@ -22,7 +22,7 @@ public class UpdateBookHandler : IRequestHandler<UpdateBookCmd>
 
         // TODO: gestire concorrenza
         book.Update(
-            request.CurrentUser,
+            Guid.Empty,
             request.Title,
             request.Author,
             request.Pages,

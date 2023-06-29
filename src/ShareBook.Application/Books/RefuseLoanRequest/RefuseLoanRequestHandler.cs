@@ -21,7 +21,7 @@ public class RefuseLoanRequestHandler : IRequestHandler<RefuseLoanRequestCmd>
         if(book is null)
             throw new NotFoundException();
 
-        book.RefuseLoanRequest(request.RequestingUser);
+        book.RefuseLoanRequest(Guid.Empty);
         await _repository.SaveAsync();
     }
 }
