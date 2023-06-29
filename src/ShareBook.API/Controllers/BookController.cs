@@ -46,7 +46,7 @@ public class BookController : ControllerBase
 
         await _mediator.Send(new CreateBookCmd(
             id,
-            dto.CurrentUser,
+            this.GetUserId(),
             dto.Title,
             dto.Author,
             dto.Pages,

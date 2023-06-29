@@ -5,8 +5,6 @@ namespace ShareBook.API.DTOs;
 public class CreateBookDto
 {
     [MinLength(1)]
-    public required string CurrentUser { get; set; } // TODO: Temporary until authentication is implemented.
-    [MinLength(1)]
     public required string Title { get; set; }
     [MinLength(1)]
     public required string Author { get; set; }
