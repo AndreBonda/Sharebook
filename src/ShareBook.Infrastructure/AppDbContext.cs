@@ -46,6 +46,11 @@ public class AppDbContext : DbContext, IAppDbContext
             .OwnsOne<Password>("_password")
             .Property(p => p.PasswordHash)
             .HasColumnName("Password");
+
+        modelBuilder.Entity<User>()
+            .HasMany<Book>()
+            .WithOne()
+            .HasForeignKey(b => b.OwnerId);
         #endregion
 
         base.OnModelCreating(modelBuilder);
