@@ -73,12 +73,11 @@ public class BookController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = id }, null);
     }
 
-    [HttpPatch("book/{book_id}/new_loan_request/{current_user}")]
+    [HttpPost("book/{book_id}/new_loan_request")]
     public async Task<IActionResult> RequestLoan(
-        [FromRoute(Name = "book_id")] Guid BookId,
-        [FromRoute(Name = "current_user")] string CurrentUser)
+        [FromRoute(Name = "book_id")] Guid BookId)
     {
-        await _mediator.Send(new CreateLoanRequestCmd(BookId, CurrentUser));
+        await _mediator.Send(new CreateLoanRequestCmd(BookId, this.GetUserId()));
 
         return CreatedAtAction(nameof(GetById), new { id = BookId }, null);
     }

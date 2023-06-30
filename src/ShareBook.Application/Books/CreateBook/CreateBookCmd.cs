@@ -4,7 +4,7 @@ namespace ShareBook.Application.Books;
 
 public record CreateBookCmd(
     Guid Id, 
-    Guid User,
+    Guid UserId,
     string Title,
     string Author,
     int Pages,
