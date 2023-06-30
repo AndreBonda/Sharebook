@@ -62,7 +62,7 @@ public class BookController : ControllerBase
     {
         await _mediator.Send(new UpdateBookCmd(
             id,
-            dto.CurrentUser,
+            this.GetUserId(),
             dto.Title,
             dto.Author,
             dto.Pages,

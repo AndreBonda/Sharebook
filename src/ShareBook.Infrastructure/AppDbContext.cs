@@ -25,7 +25,7 @@ public class AppDbContext : DbContext, IAppDbContext
             .Property(e => e.Labels)
             .HasConversion(
                 v => string.Join(',', v),
-                v => v.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList()
             );
 
         modelBuilder.Entity<Book>()

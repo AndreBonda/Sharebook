@@ -4,7 +4,7 @@ namespace ShareBook.Application.Books;
 
 public record UpdateBookCmd(
     Guid Id, 
-    string CurrentUser,
+    Guid UserId,
     string Title,
     string Author,
     int Pages,

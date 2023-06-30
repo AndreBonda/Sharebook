@@ -7,12 +7,12 @@ namespace ShareBook.Domain.Books;
 
 public class Book : AggregateRoot<Guid>
 {
-    private readonly List<string> _labels = new();
+    private List<string> _labels = new();
     public Guid OwnerId { get; private set; }
     public string Title { get; private set; }
     public string Author { get; private set; }
     public int Pages { get; private set; }
-    public IEnumerable<string> Labels => _labels;
+    public IReadOnlyCollection<string> Labels => _labels;
     public bool SharedByOwner { get; private set; }
     private LoanRequest CurrentLoanRequest { get; set; }
 
@@ -35,6 +35,9 @@ public class Book : AggregateRoot<Guid>
 
         Validate();
     }
+
+    protected Book()
+    { }
 
     public virtual void Update(Guid bookOwnerId, string title, string author, int pages, bool sharedByOwner, IEnumerable<string> labels)
     {
@@ -95,7 +98,7 @@ public class Book : AggregateRoot<Guid>
 
     private void SetupLabels(IEnumerable<string> labels)
     {
-        _labels.Clear();
+        _labels = new();
 
         foreach (var label in labels)
             AddLabel(label);
