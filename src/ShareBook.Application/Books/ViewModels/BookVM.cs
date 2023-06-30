@@ -12,6 +12,6 @@ public class BookVM
     public int Pages { get; set; }
     public string Labels { get; set; }
     public bool SharedByOwner { get; set; }
-    public int? CurrentLoanRequestStatus { get; set; }
-    public string CurrentLoanRequestRequestingUser { get; set; }
+    public int? RequestStatus { get; set; }
+    public string RequestingUserEmail { get; set; }
 }

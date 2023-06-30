@@ -22,16 +22,18 @@ public class BookQueries : IBookQueries
 
         queryBuilder.Append(@"
         select
-        id,
-        owner,
+        books.id,
+        owner_id,
         title,
         author,
         pages,
         labels,
         shared_by_owner ,
-        current_loan_request_requesting_user,
-        current_loan_request_status
+        requesting_user.email as requesting_user_email,
+        current_loan_request_status as request_status
         from books
+        	left join users as owner on owner.id = owner_id
+        	left join users as requesting_user on requesting_user.id = current_loan_request_requesting_user_id
         where 1 = 1");
 
         if(!string.IsNullOrEmpty(title)) {
