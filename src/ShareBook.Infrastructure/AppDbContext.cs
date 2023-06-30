@@ -40,12 +40,12 @@ public class AppDbContext : DbContext, IAppDbContext
         modelBuilder.Entity<User>()
             .OwnsOne<Email>(u => u.Email)
             .Property(e => e.Value)
-            .HasColumnName("Email");
+            .HasColumnName("email");
 
         modelBuilder.Entity<User>()
             .OwnsOne<Password>("_password")
             .Property(p => p.PasswordHash)
-            .HasColumnName("Password");
+            .HasColumnName("password");
 
         modelBuilder.Entity<User>()
             .HasMany<Book>()
