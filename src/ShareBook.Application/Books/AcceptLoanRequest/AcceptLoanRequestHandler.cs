@@ -24,7 +24,7 @@ public class AcceptLoanRequestHandler : IRequestHandler<AcceptLoanRequestCmd>
         if (book is null)
             throw new NotFoundException("Book not found");
 
-        book.AcceptLoanRequest(Guid.Empty);
+        book.AcceptLoanRequest(request.UserId);
 
         await _bookRepository.SaveAsync();
 
