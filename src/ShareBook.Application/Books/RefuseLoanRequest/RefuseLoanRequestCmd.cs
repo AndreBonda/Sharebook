@@ -4,5 +4,5 @@ namespace ShareBook.Application.Books;
 
 public record RefuseLoanRequestCmd(
     Guid BookId,
-    string RequestingUser
+    Guid UserId
     ) : IRequest;
