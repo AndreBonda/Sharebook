@@ -14,6 +14,7 @@ public class Book : AggregateRoot<Guid>
     public int Pages { get; private set; }
     public IReadOnlyCollection<string> Labels => _labels;
     public bool SharedByOwner { get; private set; }
+    public string Ruined { get; set; }
     private LoanRequest CurrentLoanRequest { get; set; }
 
     protected Book(

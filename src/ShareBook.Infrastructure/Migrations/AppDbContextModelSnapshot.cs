@@ -116,7 +116,7 @@ namespace ShareBook.Infrastructure.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_books_users_user_id");
 
-                    b.OwnsOne("ShareBook.Domain.Books.LoanRequest", "CurrentLoanRequest", b1 =>
+                    b.OwnsOne("ShareBook.Domain.Books.Book.CurrentLoanRequest#ShareBook.Domain.Books.LoanRequest", "CurrentLoanRequest", b1 =>
                         {
                             b1.Property<Guid>("BookId")
                                 .HasColumnType("uuid")
@@ -140,7 +140,7 @@ namespace ShareBook.Infrastructure.Migrations
 
                             b1.HasKey("BookId");
 
-                            b1.ToTable("books");
+                            b1.ToTable("books", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("BookId")
@@ -162,7 +162,7 @@ namespace ShareBook.Infrastructure.Migrations
 
             modelBuilder.Entity("ShareBook.Domain.Users.User", b =>
                 {
-                    b.OwnsOne("ShareBook.Domain.Shared.ValueObjects.Email", "Email", b1 =>
+                    b.OwnsOne("ShareBook.Domain.Users.User.Email#ShareBook.Domain.Shared.ValueObjects.Email", "Email", b1 =>
                         {
                             b1.Property<Guid>("UserId")
                                 .HasColumnType("uuid")
@@ -174,14 +174,14 @@ namespace ShareBook.Infrastructure.Migrations
 
                             b1.HasKey("UserId");
 
-                            b1.ToTable("users");
+                            b1.ToTable("users", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("UserId")
                                 .HasConstraintName("fk_users_users_id");
                         });
 
-                    b.OwnsOne("ShareBook.Domain.Shared.ValueObjects.Password", "_password", b1 =>
+                    b.OwnsOne("ShareBook.Domain.Users.User._password#ShareBook.Domain.Shared.ValueObjects.Password", "_password", b1 =>
                         {
                             b1.Property<Guid>("UserId")
                                 .HasColumnType("uuid")
@@ -193,7 +193,7 @@ namespace ShareBook.Infrastructure.Migrations
 
                             b1.HasKey("UserId");
 
-                            b1.ToTable("users");
+                            b1.ToTable("users", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("UserId")
