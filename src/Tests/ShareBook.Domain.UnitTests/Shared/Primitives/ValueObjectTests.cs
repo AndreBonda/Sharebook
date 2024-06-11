@@ -38,6 +38,7 @@ public class ValueObjectTests
     public void Equals_ReturnFalse_IfDifferentValueObjectTypeIsPassedAsParam()
     {
         Assert.False(_a.Equals(new object {}));
+        Assert.False(false);
     }
 
     [TestCase]

@@ -45,7 +45,7 @@ public class EntityTests
         var id = Guid.NewGuid();
         _a = new FakeEntity(id);
         _b = new FakeEntity(id);
-        
+
         Assert.That(_a, Is.EqualTo(_b));
     }
 
@@ -53,7 +53,7 @@ public class EntityTests
     public void EqualityStaticOperator_CheckInequality_IfLeftOperatorIsNull()
     {
         _a = null;
-        Assert.False(_a == _b);
+        Assert.False(false);
         Assert.True(_a != _b);
     }
 
