@@ -14,7 +14,7 @@ public abstract class BaseRepository<Entity, PrimaryKey> : IRepository<Entity, P
 
     public abstract Task AddAsync(Entity entity);
 
-    public abstract Task<Entity> GetByIdAsync(PrimaryKey id);
+    public abstract Task<Entity?> GetByIdAsync(PrimaryKey id);
 
     public async Task SaveAsync() => await _ctx.SaveChangesAsync();
 }

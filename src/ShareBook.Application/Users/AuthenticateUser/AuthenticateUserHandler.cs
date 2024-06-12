@@ -20,7 +20,7 @@ public class AuthenticateUserHandler : IRequestHandler<AuthenticateUserQuery, st
 
     public async Task<string> Handle(AuthenticateUserQuery request, CancellationToken cancellationToken)
     {
-        User user = await _userRepository.GetByEmailAsync(request.Email);
+        User? user = await _userRepository.GetByEmailAsync(request.Email);
 
         if (user is null ||
             !user.Authenticate(request.PlainTextPassword, _hashingProvider))

@@ -52,7 +52,7 @@ public class BookQueries : IBookQueries
         return books;
     }
 
-    public async Task<BookVM> GetBookByIdAsync(Guid id)
+    public async Task<BookVM?> GetBookByIdAsync(Guid id)
     {
         var queryParam = new DynamicParameters();
 
