@@ -1,5 +1,5 @@
 using FluentAssertions;
-using Moq;
+using NSubstitute;
 using ShareBook.Domain.Shared.Primitives;
 
 namespace ShareBook.UnitTests.Shared.Primitives;
@@ -26,13 +26,11 @@ public class AggregateRootTests
     public void RegisterEvent_ReleaseEvents_WhenEventIsPassed()
     {
         // Arrange
-        Mock<DomainEvent> domainEventOne = new();
-        Mock<DomainEvent> domainEventTwo = new();
         FakeAggregateRoot sut = new FakeAggregateRoot(Guid.NewGuid());
 
         // Act
-        sut.FakeRaise(domainEventOne.Object);
-        sut.FakeRaise(domainEventTwo.Object);
+        sut.FakeRaise(Substitute.For<DomainEvent>());
+        sut.FakeRaise(Substitute.For<DomainEvent>());
         IEnumerable<DomainEvent> releasedEvents = sut.ReleaseEvents();
         IEnumerable<DomainEvent> emptyReleasedEvents = sut.ReleaseEvents();
 

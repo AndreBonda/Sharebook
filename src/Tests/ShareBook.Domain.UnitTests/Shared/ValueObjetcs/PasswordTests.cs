@@ -1,5 +1,5 @@
 using FluentAssertions;
-using Moq;
+using NSubstitute;
 using ShareBook.Domain.Shared;
 using ShareBook.Domain.Shared.ValueObjects;
 
@@ -8,7 +8,7 @@ namespace ShareBook.UnitTests.Shared.ValueObjects;
 [TestFixture]
 public class PasswordTests
 {
-    private Mock<IHashingProvider> _hashingProvider = new();
+    private IHashingProvider _hashingProvider = Substitute.For<IHashingProvider>();
 
     [TestCase(null)]
     [TestCase("")]
@@ -20,7 +20,7 @@ public class PasswordTests
     [TestCase("aaAA")]
     public void Constructor_InvalidPassword_ThrowsArgumentException(string invalidPassword)
     {
-        var act = () => new Password(invalidPassword, _hashingProvider.Object);
+        var act = () => new Password(invalidPassword, _hashingProvider);
 
         act.Should().Throw<ArgumentException>();
     }
@@ -38,11 +38,12 @@ public class PasswordTests
     {
         // Arrange
         _hashingProvider
-            .Setup(p => p.Hash(It.IsAny<string>()))
+            .Hash(Arg.Any<string>())
             .Returns("Hashed_password");
 
+
         // Act
-        var password = new Password("AAbb11**", _hashingProvider.Object);
+        var password = new Password("AAbb11**", _hashingProvider);
 
         // Assert
         password.PasswordHash.Should().Be("Hashed_password");

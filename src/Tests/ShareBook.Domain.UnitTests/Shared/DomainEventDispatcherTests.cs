@@ -1,5 +1,5 @@
 using MediatR;
-using Moq;
+using NSubstitute;
 using ShareBook.Domain.Shared;
 using ShareBook.Domain.Shared.Primitives;
 
@@ -12,18 +12,18 @@ public class DomainEventDispatcherTests
     public async Task DispatchAndClearEventsAsync_DispatchEventsAndClearEventContainers()
     {
         // Arrange
-        Mock<IMediator> mediator = new();
-        Mock<DomainEvent> domainEventOne = new();
-        Mock<DomainEvent> domainEventTwo = new();
-        DomainEventDispatcher sut = new (mediator.Object);
+        IMediator mediator = Substitute.For<IMediator>();
+        DomainEvent domainEventOne = Substitute.For<DomainEvent>();
+        DomainEvent domainEventTwo = Substitute.For<DomainEvent>();
+        DomainEventDispatcher sut = new (mediator);
 
         // Act
-        await sut.DispatchEventsAsync(new DomainEvent[]{
-            domainEventOne.Object,
-            domainEventTwo.Object
+        await sut.DispatchEventsAsync(new [] {
+            domainEventOne,
+            domainEventTwo
         });
 
         // Assert
-        mediator.Verify(m => m.Publish(It.IsAny<DomainEvent>(), new CancellationToken()), Times.Exactly(2));
+        await mediator.Received(2).Publish(Arg.Any<DomainEvent>());
     }
 }

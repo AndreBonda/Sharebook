@@ -1,6 +1,4 @@
 using FluentAssertions;
-using Moq;
-using ShareBook.Domain.Shared;
 using ShareBook.Domain.Shared.ValueObjects;
 
 namespace ShareBook.UnitTests.Shared.ValueObjects;
