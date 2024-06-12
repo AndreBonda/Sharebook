@@ -1,3 +1,4 @@
+using FluentAssertions;
 using ShareBook.Domain.Shared.Primitives;
 
 namespace ShareBook.UnitTests.Shared.Primitives;
@@ -37,51 +38,47 @@ public class ValueObjectTests
     [TestCase]
     public void Equals_ReturnFalse_IfDifferentValueObjectTypeIsPassedAsParam()
     {
-        Assert.False(_a.Equals(new object {}));
-        Assert.False(false);
+        _a.Equals(new { }).Should().BeFalse();
     }
 
     [TestCase]
     public void Equals_ReturnFalse_IfNullIsPassedAsParam()
     {
-        _b = null;
-        Assert.False(_a.Equals(_b));
+        _a.Equals(null).Should().BeFalse();
     }
 
     [TestCase]
     public void Equals_ReturnFalse_IfTextIsNotEqual()
     {
         _b.Text = "different";
-        Assert.False(_a.Equals(_b));
+        _a.Equals(_b).Should().BeFalse();
     }
 
     [TestCase]
     public void Equals_ReturnFalse_IfValueIsNotEqual()
     {
         _b.Value = 11;
-        Assert.False(_a.Equals(_b));
+        _a.Equals(_b).Should().BeFalse();
     }
 
     [TestCase]
     public void Equals_ReturnTrue_IfTheyHAveSameValueProperties()
     {
-        Assert.True(_a.Equals(_b));
+        _a.Equals(_b).Should().BeTrue();
     }
 
     [TestCase]
     public void EqualityStaticOperator_CheckInequality_IfLeftOperatorIsNull()
     {
-        _a = null;
-        Assert.False(_a == _b);
-        Assert.True(_a != _b);
+        (null == _b).Should().BeFalse();
+        (null != _b).Should().BeTrue();
     }
 
     [TestCase]
     public void EqualityStaticOperator_CheckInequality_IfRightOperatorIsNull()
     {
-        _b = null;
-        Assert.False(_a == _b);
-        Assert.True(_a != _b);
+        (_a == null).Should().BeFalse();
+        (_a != null).Should().BeTrue();
     }
 
     [TestCase]
@@ -89,27 +86,33 @@ public class ValueObjectTests
     {
         _a = null;
         _b = null;
-        Assert.True(_a == _b);
-        Assert.False(_a != _b);
+
+        (_a == _b).Should().BeTrue();
+        (_a != _b).Should().BeFalse();
     }
 
     [TestCase]
     public void GetHashCode_ReturnsDifferentCode_IfPropertiesAreNotEquals()
     {
+        // Arrange
         _b.Text = "different";
 
+        // Act
         var code1 = _a.GetHashCode();
         var code2 = _b.GetHashCode();
 
-        Assert.That(code1, Is.Not.EqualTo(code2));
+        // Assert
+        code1.Should().NotBe(code2);
     }
 
     [TestCase]
     public void GetHashCode_ReturnsSameCode_IfPropertiesAreEquals()
     {
+        // Arrange & Act
         var code1 = _a.GetHashCode();
         var code2 = _b.GetHashCode();
 
-        Assert.That(code1, Is.EqualTo(code2));
+        // Assert
+        code1.Should().Be(code2);
     }
 }

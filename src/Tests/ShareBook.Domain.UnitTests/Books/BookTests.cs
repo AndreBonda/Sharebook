@@ -1,3 +1,4 @@
+using FluentAssertions;
 using ShareBook.Domain.Books;
 using ShareBook.Domain.Books.Events;
 using ShareBook.Domain.Books.Exceptions;
@@ -11,12 +12,21 @@ public class BookTests
     [Test]
     public void New_ThrowsException_IfGuidIsEmpty()
     {
-        Assert.Throws<ArgumentException>(() => Book.New(Guid.Empty, Guid.NewGuid(), "valid_title", "valid_author", 1, true));
+        // Act
+        var act = () => Book.New(Guid.Empty, Guid.NewGuid(), "valid_title", "valid_author", 1, true);
+
+        // Assert
+        act.Should().Throw<ArgumentException>();
     }
 
+    [Test]
     public void New_ThrowsArgumentNullException_IfOwnerIdIsAnEmptyGuid()
     {
-        Assert.Throws<ArgumentNullException>(() => Book.New(Guid.NewGuid(), Guid.Empty, "title", "author", 1, true));
+        // Act
+        var act = () => Book.New(Guid.NewGuid(), Guid.Empty, "title", "author", 1, true);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [TestCase("")]
@@ -24,7 +34,11 @@ public class BookTests
     [TestCase(null)]
     public void New_ThrowsArgumentNullException_IfTitleIsNullOrEmptyOrWhiteSpaces(string invalidTitle)
     {
-        Assert.Throws<ArgumentNullException>(() => Book.New(Guid.NewGuid(), Guid.NewGuid(), invalidTitle, "author", 1, true));
+        // Act
+        var act = () => Book.New(Guid.NewGuid(), Guid.NewGuid(), invalidTitle, "author", 1, true);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [TestCase("")]
@@ -32,14 +46,22 @@ public class BookTests
     [TestCase(null)]
     public void New_ThrowsArgumentNullException_IfAuthorIsNullOrEmptyOrWhiteSpaces(string invalidAuthor)
     {
-        Assert.Throws<ArgumentNullException>(() => Book.New(Guid.NewGuid(), Guid.NewGuid(), "title", invalidAuthor, 1, true));
+        // Act
+        var act = () => Book.New(Guid.NewGuid(), Guid.NewGuid(), "title", invalidAuthor, 1, true);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [TestCase(0)]
     [TestCase(-1)]
     public void New_ThrowsArgumentOutOfRangeException_IfPagesAreLessThanOne(int invalidPages)
     {
-        Assert.Throws<ArgumentOutOfRangeException>(() => Book.New(Guid.NewGuid(), Guid.NewGuid(), "title", "author", invalidPages, true));
+        // Act
+        var act = () => Book.New(Guid.NewGuid(), Guid.NewGuid(), "title", "author", invalidPages, true);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>();
     }
 
     [Test]
@@ -60,16 +82,15 @@ public class BookTests
             new string[] { "label1", "label2" });
 
         // Assert
-        Assert.That(book, Is.Not.Null);
-        Assert.That(book.Id, Is.EqualTo(bookId));
-        Assert.That(book.CreatedAt, Is.EqualTo(DateTime.UtcNow).Within(1).Minutes);
-        Assert.That(book.OwnerId, Is.EqualTo(ownerId));
-        Assert.That(book.Title, Is.EqualTo("title"));
-        Assert.That(book.Author, Is.EqualTo("author"));
-        Assert.That(book.Pages, Is.EqualTo(1));
-        Assert.IsTrue(book.SharedByOwner);
-        Assert.That(book.Labels, Is.EquivalentTo(new string[] { "label1", "label2" }));
-        Assert.That(book.RequestStatus(), Is.Null);
+        book.Id.Should().Be(bookId);
+        book.CreatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromMinutes(1));
+        book.OwnerId.Should().Be(ownerId);
+        book.Title.Should().Be("title");
+        book.Author.Should().Be("author");
+        book.Pages.Should().Be(1);
+        book.SharedByOwner.Should().BeTrue();
+        book.Labels.Should().BeEquivalentTo(new[] { "label1", "label2" });
+        book.RequestStatus().Should().BeNull();
     }
 
     [Test]
@@ -86,17 +107,15 @@ public class BookTests
             new string[] { "label1", "label1" });
 
         // Assert
-        Assert.That(book.Labels, Is.EquivalentTo(new string[] { "label1" }));
+        book.Labels.Should().BeEquivalentTo(new[] { "label1" });
     }
 
     [Test]
     public void Update_ThrowsUserIsNotBookOwnerException_IfUserIsNotTheBookOwner()
     {
-        // Assert
+        // Arrange
         var ownerId = Guid.NewGuid();
         var notOwnerUserId = Guid.NewGuid();
-
-        // ACT
         var book = Book.New(
             Guid.NewGuid(),
             ownerId,
@@ -106,23 +125,25 @@ public class BookTests
             true,
             new string[] { "label1" });
 
-        Assert.Throws<UserIsNotBookOwnerException>(() => book.Update(
+        // Act
+        var act = () => book.Update(
             notOwnerUserId,
             "title",
             "author",
             1,
             true,
             new string[] { "label1" }
-        ));
+        );
+
+        // Assert
+        act.Should().Throw<UserIsNotBookOwnerException>();
     }
 
     [Test]
     public void Update_UpdateFields_IfValidInputs()
     {
-        // Assert
+        // Arrange
         var ownerId = Guid.NewGuid();
-
-        // Act
         var book = Book.New(
             Guid.NewGuid(),
             ownerId,
@@ -132,6 +153,7 @@ public class BookTests
             true,
             new string[] { "label1" });
 
+        // Act
         book.Update(
            ownerId,
            "title_update",
@@ -140,11 +162,11 @@ public class BookTests
            false,
            new string[] { "label2" });
 
-        Assert.That(book.Title, Is.EqualTo("title_update"));
-        Assert.That(book.Author, Is.EqualTo("author_update"));
-        Assert.That(book.Pages, Is.EqualTo(2));
-        Assert.IsFalse(book.SharedByOwner);
-        Assert.That(book.Labels, Is.EquivalentTo(new string[] { "label2" }));
+        book.Title.Should().Be("title_update");
+        book.Author.Should().Be("author_update");
+        book.Pages.Should().Be(2);
+        book.SharedByOwner.Should().BeFalse();
+        book.Labels.Should().BeEquivalentTo(new[] { "label2" });
     }
 
     [Test]
@@ -165,9 +187,11 @@ public class BookTests
 
         book.RequestNewLoan(Guid.NewGuid());
 
-        // Act & Assert
-        Assert.Throws<RemoveSharingWithCurrentLoanRequestException>(() =>
-            book.Update(ownerId, "title", "author", 50, sharedByOwner, new string[] { "label1" }));
+        // Act
+        var act = () => book.Update(ownerId, "title", "author", 50, sharedByOwner, new string[] { "label1" });
+
+        // Assert
+        act.Should().Throw<RemoveSharingWithCurrentLoanRequestException>();
     }
 
     [Test]
@@ -186,8 +210,11 @@ public class BookTests
             new string[] { "label" }
             );
 
-        // Act & Assert
-        Assert.Throws<BookNotSharedByOwnerException>(() => book.RequestNewLoan(Guid.NewGuid()));
+        // Act
+        var act = () => book.RequestNewLoan(Guid.NewGuid());
+
+        // Assert
+        act.Should().Throw<BookNotSharedByOwnerException>();
     }
 
     [Test]
@@ -206,8 +233,11 @@ public class BookTests
             new string[] { "label" }
             );
 
-        // Act & Assert
-        Assert.Throws<BookOwnerCannotMakeALoanRequest>(() => book.RequestNewLoan(ownerId));
+        // Act
+        var act = () => book.RequestNewLoan(ownerId);
+
+        // Assert
+        act.Should().Throw<BookOwnerCannotMakeALoanRequest>();
     }
 
     [Test]
@@ -228,7 +258,7 @@ public class BookTests
         book.RequestNewLoan(Guid.NewGuid());
 
         // Assert
-        Assert.That(book.RequestStatus(), Is.EqualTo(LoanRequestStatus.WAITING_FOR_ACCEPTANCE));
+        book.RequestStatus().Should().Be(LoanRequestStatus.WAITING_FOR_ACCEPTANCE);
     }
 
     [Test]
@@ -247,9 +277,12 @@ public class BookTests
             true,
             new string[] { "label" }
             );
-        
-        // Act & Assert
-        Assert.Throws<UserIsNotBookOwnerException>(() => book.RefuseLoanRequest(notOwnerUserId));
+
+        // Act
+        var act = () => book.RefuseLoanRequest(notOwnerUserId);
+
+        // Assert
+        act.Should().Throw<UserIsNotBookOwnerException>();
     }
 
     [Test]
@@ -267,9 +300,12 @@ public class BookTests
             true,
             new string[] { "label" }
             );
-        
-        // Act & Assert
-        Assert.Throws<NonExistingLoanRequestException>(() => book.RefuseLoanRequest(ownerId));
+
+        // Act
+        var act = () => book.RefuseLoanRequest(ownerId);
+
+        // Assert
+        act.Should().Throw<NonExistingLoanRequestException>();
     }
 
     [Test]
@@ -292,8 +328,11 @@ public class BookTests
         book.RequestNewLoan(requestingUserId);
         book.AcceptLoanRequest(ownerId);
 
-        // Act & Assert
-        Assert.Throws<LoanRequestAlreadyAcceptedException>(() => book.AcceptLoanRequest(ownerId));
+        // Act
+        var act = () => book.AcceptLoanRequest(ownerId);
+
+        // Assert
+        act.Should().Throw<LoanRequestAlreadyAcceptedException>();
     }
 
     [Test]
@@ -317,7 +356,7 @@ public class BookTests
         book.RefuseLoanRequest(ownerId);
 
         // Act & Assert
-        Assert.That(book.RequestStatus(), Is.Null);
+        book.RequestStatus().Should().BeNull();
     }
 
     [Test]
@@ -336,9 +375,12 @@ public class BookTests
             true,
             new string[] { "label" }
             );
-        
-        // Act & Assert
-        Assert.Throws<UserIsNotBookOwnerException>(() => book.AcceptLoanRequest(notOwnerUserId));
+
+        // Act
+        var act = () => book.AcceptLoanRequest(notOwnerUserId);
+
+        // Assert
+        act.Should().Throw<UserIsNotBookOwnerException>();
     }
 
     [Test]
@@ -356,9 +398,12 @@ public class BookTests
             true,
             new string[] { "label" }
             );
-        
-        // Act & Assert
-        Assert.Throws<NonExistingLoanRequestException>(() => book.AcceptLoanRequest(ownerId));
+
+        // Act
+        var act = () => book.AcceptLoanRequest(ownerId);
+
+        // Assert
+        act.Should().Throw<NonExistingLoanRequestException>();
     }
 
     [Test]
@@ -380,18 +425,17 @@ public class BookTests
 
         book.RequestNewLoan(requestingUserId);
 
-        // Act
+        // Act & Assert
         book.AcceptLoanRequest(ownerId);
 
-        // Assert
         var events = book.ReleaseEvents();
 
-        Assert.That(book.RequestStatus(), Is.EqualTo(LoanRequestStatus.ACCEPTED));
-        Assert.That(events, Has.Exactly(1).TypeOf<LoanRequestAcceptedEvent>());
+        book.RequestStatus().Should().Be(LoanRequestStatus.ACCEPTED);
+        events.Should().ContainSingle(e => e.GetType() == typeof(LoanRequestAcceptedEvent));
 
         var @event = ((LoanRequestAcceptedEvent)events.First());
 
-        Assert.That(@event.BookId, Is.EqualTo(book.Id));
-        Assert.That(@event.DateOcurred, Is.EqualTo(DateTime.UtcNow).Within(1).Minutes);
+        @event.BookId.Should().Be(book.Id);
+        @event.DateOcurred.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromMinutes(1));
     }
 }

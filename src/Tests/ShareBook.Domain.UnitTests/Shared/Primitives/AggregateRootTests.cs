@@ -1,3 +1,4 @@
+using FluentAssertions;
 using Moq;
 using ShareBook.Domain.Shared.Primitives;
 
@@ -36,7 +37,7 @@ public class AggregateRootTests
         IEnumerable<DomainEvent> emptyReleasedEvents = sut.ReleaseEvents();
 
         // Assert
-        Assert.That(releasedEvents.Count(), Is.EqualTo(2));
-        Assert.That(emptyReleasedEvents.Count(), Is.EqualTo(0));
+        releasedEvents.Count().Should().Be(2);
+        emptyReleasedEvents.Count().Should().Be(0);
     }
 }

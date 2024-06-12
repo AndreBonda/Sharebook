@@ -1,3 +1,4 @@
+using FluentAssertions;
 using Moq;
 using ShareBook.Domain.Shared;
 using ShareBook.Domain.Shared.ValueObjects;
@@ -9,70 +10,27 @@ public class PasswordTests
 {
     private Mock<IHashingProvider> _hashingProvider = new();
 
-    [Test]
-    public void Constructor_NullPassword_ThrowsArgumentException()
+    [TestCase(null)]
+    [TestCase("")]
+    [TestCase(" ")]
+    [TestCase("aA*1")]
+    [TestCase("AA*1")]
+    [TestCase("aa*1")]
+    [TestCase("aa*A")]
+    [TestCase("aaAA")]
+    public void Constructor_InvalidPassword_ThrowsArgumentException(string invalidPassword)
     {
-        Assert.Throws<ArgumentException>(() => new Password(null, _hashingProvider.Object));
-    }
+        var act = () => new Password(invalidPassword, _hashingProvider.Object);
 
-    [Test]
-    public void Constructor_EmptyPassword_ThrowsArgumentException()
-    {
-        Assert.Throws<ArgumentException>(() => new Password(string.Empty, _hashingProvider.Object));
-    }
-
-    [Test]
-    public void Constructor_WhiteSpacesPassword_ThrowsArgumentException()
-    {
-        Assert.Throws<ArgumentException>(() => new Password(" ", _hashingProvider.Object));
-    }
-
-    [Test]
-    public void Constructor_ShortPassword_ThrowsArgumentException()
-    {
-        Assert.Throws<ArgumentException>(() => new Password("aA*1", _hashingProvider.Object));
-    }
-
-    [Test]
-    public void Constructor_NoLowerCasePassword_ThrowsArgumentException()
-    {
-        Assert.Throws<ArgumentException>(() => new Password("AA*1", _hashingProvider.Object));
-    }
-
-    [Test]
-    public void Constructor_NoUpperCasePassword_ThrowsArgumentException()
-    {
-        Assert.Throws<ArgumentException>(() => new Password("aa*1", _hashingProvider.Object));
-    }
-
-    [Test]
-    public void Constructor_NoNumericPassword_ThrowsArgumentException()
-    {
-        Assert.Throws<ArgumentException>(() => new Password("aa*A", _hashingProvider.Object));
-    }
-
-    [Test]
-    public void Constructor_NoSpecialCharacterPassword_ThrowsArgumentException()
-    {
-        Assert.Throws<ArgumentException>(() => new Password("aaAA", _hashingProvider.Object));
+        act.Should().Throw<ArgumentException>();
     }
 
     [Test]
     public void Constructor_NullHashingProvider_ThrowsArgumentException()
     {
-        Assert.Throws<ArgumentNullException>(() => new Password("AAbb11**", null));
-    }
+        var act = () => new Password("AAbb11**", null);
 
-    [Test]
-    public void Constructor_PasswordHashNull_ThrowsArgumentException()
-    {
-        Assert.Throws<ArgumentException>(() => new Password(null, _hashingProvider.Object));
-    }
-
-    [Test]
-    public void Constructor_PasswordHashEmpty_ThrowsArgumentException()
-    {
-        Assert.Throws<ArgumentException>(() => new Password(string.Empty, _hashingProvider.Object));
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Test]
@@ -82,11 +40,11 @@ public class PasswordTests
         _hashingProvider
             .Setup(p => p.Hash(It.IsAny<string>()))
             .Returns("Hashed_password");
-        
+
         // Act
         var password = new Password("AAbb11**", _hashingProvider.Object);
 
         // Assert
-        Assert.That(password.PasswordHash, Is.EqualTo("Hashed_password"));
+        password.PasswordHash.Should().Be("Hashed_password");
     }
 }

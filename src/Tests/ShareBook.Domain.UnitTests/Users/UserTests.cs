@@ -1,3 +1,4 @@
+using FluentAssertions;
 using Moq;
 using ShareBook.Domain.Shared;
 using ShareBook.Domain.Shared.ValueObjects;
@@ -18,15 +19,18 @@ public class UserTests
         _password = new();
         _hashingProvider = new();
     }
-    
+
     [Test]
     public void Validation_ThrowsArgumentException_IfGuidIsEmpty() {
         // Arrange
         var email = _email.Object;
         var password = _password.Object;
 
-        // Act & Assert
-        Assert.Throws<ArgumentException>(() => new User(Guid.Empty, email, password));
+        // Act
+        var act = () => new User(Guid.Empty, email, password);
+
+        // Assert
+        act.Should().Throw<ArgumentException>();
     }
 
     [Test]
@@ -35,9 +39,11 @@ public class UserTests
         // Arrange
         var password = _password.Object;
 
-        // Arrange & Act & Assert
-        Assert.Throws<ArgumentNullException>(
-            () => new User(Guid.NewGuid(), null, password));
+        // Act
+        var act = () => new User(Guid.NewGuid(), null, password);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Test]
@@ -46,9 +52,11 @@ public class UserTests
         // Arrange
         var email = _email.Object;
 
-        // Arrange & Act & Assert
-        Assert.Throws<ArgumentNullException>(
-            () => new User(Guid.NewGuid(), email, null));
+        // Act
+        var act = () => new User(Guid.NewGuid(), email, null);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Test]
@@ -63,6 +71,6 @@ public class UserTests
         var user = new User(guid, email, password);
 
         // Assert
-        Assert.That(user.Email.Value, Is.EqualTo("valid_email"));
+        user.Email.Value.Should().Be("valid_email");
     }
 }

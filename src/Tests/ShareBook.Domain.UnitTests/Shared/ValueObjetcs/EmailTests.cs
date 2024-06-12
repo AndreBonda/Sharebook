@@ -1,3 +1,4 @@
+using FluentAssertions;
 using Moq;
 using ShareBook.Domain.Shared;
 using ShareBook.Domain.Shared.ValueObjects;
@@ -10,32 +11,27 @@ public class EmailTests
     [Test]
     public void Constructor_NullInput_ThrowsArgumentException()
     {
-        Assert.Throws<ArgumentNullException>(() => new Email(null));
+        var act = () => new Email(null);
+
+        act.Should().Throw<ArgumentNullException>();
     }
 
-    [Test]
-    public void Constructor_EmptyInput_ThrowsArgumentException()
+    [TestCase("")]
+    [TestCase(" ")]
+    [TestCase("wrong_email")]
+    public void Constructor_InvalidInput_ThrowsArgumentException(string invalidInput)
     {
-        Assert.Throws<ArgumentException>(() => new Email(string.Empty));
+        var act = () => new Email(invalidInput);
+
+        act.Should().Throw<ArgumentException>();
     }
 
-    [Test]
-    public void Constructor_WhiteSpacesInput_ThrowsArgumentException()
-    {
-        Assert.Throws<ArgumentException>(() => new Email(" "));
-    }
-
-    [Test]
-    public void Constructor_WrongInputFormat_ThrowsArgumentException()
-    {
-        Assert.Throws<ArgumentException>(() => new Email("wrong_email"));
-    }
 
     [Test]
     public void Constructor_ValidInput_SetValue()
     {
         var email = new Email("valid_email@gmail.com");
 
-        Assert.That(email.Value, Is.EqualTo("valid_email@gmail.com"));
+        email.Value.Should().Be("valid_email@gmail.com");
     }
 }
