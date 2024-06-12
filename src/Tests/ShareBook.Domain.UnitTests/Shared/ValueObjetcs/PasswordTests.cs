@@ -10,7 +10,6 @@ public class PasswordTests
 {
     private IHashingProvider _hashingProvider = Substitute.For<IHashingProvider>();
 
-    [TestCase(null)]
     [TestCase("")]
     [TestCase(" ")]
     [TestCase("aA*1")]
@@ -23,14 +22,6 @@ public class PasswordTests
         var act = () => new Password(invalidPassword, _hashingProvider);
 
         act.Should().Throw<ArgumentException>();
-    }
-
-    [Test]
-    public void Constructor_NullHashingProvider_ThrowsArgumentException()
-    {
-        var act = () => new Password("AAbb11**", null);
-
-        act.Should().Throw<ArgumentNullException>();
     }
 
     [Test]

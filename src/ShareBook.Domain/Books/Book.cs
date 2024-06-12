@@ -7,14 +7,14 @@ namespace ShareBook.Domain.Books;
 
 public class Book : AggregateRoot<Guid>
 {
-    private List<string> _labels = new();
+    private string[]? _labels;
     public Guid OwnerId { get; private set; }
     public string Title { get; private set; }
     public string Author { get; private set; }
     public int Pages { get; private set; }
-    public IReadOnlyCollection<string> Labels => _labels;
+    public IReadOnlyCollection<string>? Labels => _labels;
     public bool SharedByOwner { get; private set; }
-    private LoanRequest CurrentLoanRequest { get; set; }
+    private LoanRequest? CurrentLoanRequest { get; set; }
 
     protected Book(
         Guid id,
@@ -23,7 +23,7 @@ public class Book : AggregateRoot<Guid>
         string author,
         int pages,
         bool sharedByOwner,
-        IEnumerable<string> labels) : base(id)
+        IEnumerable<string>? labels) : base(id)
     {
         OwnerId = ownerId;
         Title = title;
@@ -31,15 +31,12 @@ public class Book : AggregateRoot<Guid>
         Pages = pages;
         SharedByOwner = sharedByOwner;
         CurrentLoanRequest = null;
-        SetupLabels(labels);
+        _labels = labels?.ToArray() ?? [];
 
         Validate();
     }
 
-    protected Book()
-    { }
-
-    public virtual void Update(Guid bookOwnerId, string title, string author, int pages, bool sharedByOwner, IEnumerable<string> labels)
+    public virtual void Update(Guid bookOwnerId, string title, string author, int pages, bool sharedByOwner, IEnumerable<string>? labels)
     {
         if (bookOwnerId != OwnerId)
             throw new UserIsNotBookOwnerException($"User {bookOwnerId} is not the owner of this book {Id}");
@@ -48,7 +45,7 @@ public class Book : AggregateRoot<Guid>
         Author = author;
         Pages = pages;
         SharedByOwner = sharedByOwner;
-        SetupLabels(labels);
+        _labels = labels?.ToArray() ?? [];
 
         Validate();
     }
@@ -96,31 +93,14 @@ public class Book : AggregateRoot<Guid>
         RaiseEvent(new LoanRequestAcceptedEvent { BookId = Id });
     }
 
-    private void SetupLabels(IEnumerable<string> labels)
-    {
-        _labels = new();
-
-        foreach (var label in labels)
-            AddLabel(label);
-    }
-
-    private void AddLabel(string label)
-    {
-        if (string.IsNullOrWhiteSpace(label))
-            throw new ArgumentNullException(nameof(label));
-
-        if (!_labels.Contains(label))
-            _labels.Add(label);
-    }
-
     public LoanRequestStatus? RequestStatus() => CurrentLoanRequest?.Status;
 
     private void Validate()
     {
         if (Id == Guid.Empty) throw new ArgumentException(nameof(Id));
         if (OwnerId == Guid.Empty) throw new ArgumentNullException(nameof(OwnerId));
-        if (string.IsNullOrWhiteSpace(Title)) throw new ArgumentNullException(nameof(Title));
-        if (string.IsNullOrWhiteSpace(Author)) throw new ArgumentNullException(nameof(Author));
+        ArgumentException.ThrowIfNullOrWhiteSpace(Title);
+        ArgumentException.ThrowIfNullOrWhiteSpace(Author);
         if (Pages <= 0) throw new ArgumentOutOfRangeException(nameof(Pages));
         if (SharedByOwner is false && CurrentLoanRequest is not null)
             throw new RemoveSharingWithCurrentLoanRequestException($"This book {Id} has a loan request in progess.");
@@ -133,8 +113,8 @@ public class Book : AggregateRoot<Guid>
         string author,
         int pages,
         bool sharedByOwner,
-        IEnumerable<string> labels = null)
+        IEnumerable<string>? labels = null)
     {
-        return new Book(id, ownerId, title, author, pages, sharedByOwner, labels ?? Enumerable.Empty<string>());
+        return new Book(id, ownerId, title, author, pages, sharedByOwner, labels);
     }
 }

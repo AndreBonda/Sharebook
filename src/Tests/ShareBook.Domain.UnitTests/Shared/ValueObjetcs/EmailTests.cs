@@ -6,13 +6,6 @@ namespace ShareBook.UnitTests.Shared.ValueObjects;
 [TestFixture]
 public class EmailTests
 {
-    [Test]
-    public void Constructor_NullInput_ThrowsArgumentException()
-    {
-        var act = () => new Email(null);
-
-        act.Should().Throw<ArgumentNullException>();
-    }
 
     [TestCase("")]
     [TestCase(" ")]

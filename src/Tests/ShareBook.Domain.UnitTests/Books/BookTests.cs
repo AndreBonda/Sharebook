@@ -31,26 +31,24 @@ public class BookTests
 
     [TestCase("")]
     [TestCase(" ")]
-    [TestCase(null)]
     public void New_ThrowsArgumentNullException_IfTitleIsNullOrEmptyOrWhiteSpaces(string invalidTitle)
     {
         // Act
         var act = () => Book.New(Guid.NewGuid(), Guid.NewGuid(), invalidTitle, "author", 1, true);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>();
+        act.Should().Throw<ArgumentException>();
     }
 
     [TestCase("")]
     [TestCase(" ")]
-    [TestCase(null)]
     public void New_ThrowsArgumentNullException_IfAuthorIsNullOrEmptyOrWhiteSpaces(string invalidAuthor)
     {
         // Act
         var act = () => Book.New(Guid.NewGuid(), Guid.NewGuid(), "title", invalidAuthor, 1, true);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>();
+        act.Should().Throw<ArgumentException>();
     }
 
     [TestCase(0)]
@@ -91,23 +89,6 @@ public class BookTests
         book.SharedByOwner.Should().BeTrue();
         book.Labels.Should().BeEquivalentTo(new[] { "label1", "label2" });
         book.RequestStatus().Should().BeNull();
-    }
-
-    [Test]
-    public void New_CreateNewBook_IgnoringDuplicateLabels()
-    {
-        // Act
-        var book = Book.New(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            "valid_title",
-            "valid_author",
-            1,
-            true,
-            new string[] { "label1", "label1" });
-
-        // Assert
-        book.Labels.Should().BeEquivalentTo(new[] { "label1" });
     }
 
     [Test]

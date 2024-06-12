@@ -8,7 +8,7 @@ public class ValueObjectTests
 {
     private class FakeValueObject : ValueObject
     {
-        public string Text { get; set; }
+        public required string Text { get; set; }
         public int Value { get; set; }
 
         protected override IEnumerable<object> GetEqualityComponents()
@@ -18,101 +18,160 @@ public class ValueObjectTests
         }
     }
 
-    private FakeValueObject _a;
-    private FakeValueObject _b;
-
-    [SetUp]
-    public void SetUp() {
-        _a = new FakeValueObject
-        {
-            Text = "text",
-            Value = 10
-        };
-        _b = new FakeValueObject
-        {
-            Text = "text",
-            Value = 10
-        };
-    }
-
     [TestCase]
     public void Equals_ReturnFalse_IfDifferentValueObjectTypeIsPassedAsParam()
     {
-        _a.Equals(new { }).Should().BeFalse();
+        FakeValueObject vo = new()
+        {
+            Text = "text",
+            Value = 10
+        };
+
+        vo.Equals(new { }).Should().BeFalse();
     }
 
     [TestCase]
     public void Equals_ReturnFalse_IfNullIsPassedAsParam()
     {
-        _a.Equals(null).Should().BeFalse();
+        FakeValueObject vo = new()
+        {
+            Text = "text",
+            Value = 10
+        };
+
+        vo.Equals(null).Should().BeFalse();
     }
 
     [TestCase]
     public void Equals_ReturnFalse_IfTextIsNotEqual()
     {
-        _b.Text = "different";
-        _a.Equals(_b).Should().BeFalse();
+        FakeValueObject vo1 = new()
+        {
+            Text = "textA",
+            Value = 10
+        };
+
+        FakeValueObject vo2 = new()
+        {
+            Text = "textB",
+            Value = 10
+        };
+
+        vo1.Equals(vo2).Should().BeFalse();
     }
 
     [TestCase]
     public void Equals_ReturnFalse_IfValueIsNotEqual()
     {
-        _b.Value = 11;
-        _a.Equals(_b).Should().BeFalse();
+        FakeValueObject vo1 = new()
+        {
+            Text = "text",
+            Value = 10
+        };
+
+        FakeValueObject vo2 = new()
+        {
+            Text = "text",
+            Value = 20
+        };
+
+        vo1.Equals(vo2).Should().BeFalse();
     }
 
     [TestCase]
     public void Equals_ReturnTrue_IfTheyHAveSameValueProperties()
     {
-        _a.Equals(_b).Should().BeTrue();
+        FakeValueObject vo1 = new()
+        {
+            Text = "text",
+            Value = 10
+        };
+
+        FakeValueObject vo2 = new()
+        {
+            Text = "text",
+            Value = 10
+        };
+
+        vo1.Equals(vo2).Should().BeTrue();
     }
 
     [TestCase]
     public void EqualityStaticOperator_CheckInequality_IfLeftOperatorIsNull()
     {
-        (null == _b).Should().BeFalse();
-        (null != _b).Should().BeTrue();
+        FakeValueObject? vo1 = null;
+        FakeValueObject vo2 = new()
+        {
+            Text = "text",
+            Value = 10
+        };
+
+        (vo1 == vo2).Should().BeFalse();
+        (vo1 != vo2).Should().BeTrue();
     }
 
     [TestCase]
     public void EqualityStaticOperator_CheckInequality_IfRightOperatorIsNull()
     {
-        (_a == null).Should().BeFalse();
-        (_a != null).Should().BeTrue();
+        FakeValueObject vo1 = new()
+        {
+            Text = "text",
+            Value = 10
+        };
+
+        FakeValueObject? vo2 = null;
+
+        (vo1 == vo2).Should().BeFalse();
+        (vo1 != vo2).Should().BeTrue();
     }
 
     [TestCase]
     public void EqualityStaticOperator_CheckEquality_IfOperatoresAreNull()
     {
-        _a = null;
-        _b = null;
+        FakeValueObject? vo1 = null;
+        FakeValueObject? vo2 = null;
 
-        (_a == _b).Should().BeTrue();
-        (_a != _b).Should().BeFalse();
+        (vo1 == vo2).Should().BeTrue();
+        (vo1 != vo2).Should().BeFalse();
     }
 
     [TestCase]
     public void GetHashCode_ReturnsDifferentCode_IfPropertiesAreNotEquals()
     {
         // Arrange
-        _b.Text = "different";
+        FakeValueObject vo1 = new()
+        {
+            Text = "textA",
+            Value = 10
+        };
 
-        // Act
-        var code1 = _a.GetHashCode();
-        var code2 = _b.GetHashCode();
+        FakeValueObject vo2 = new()
+        {
+            Text = "textB",
+            Value = 20
+        };
 
-        // Assert
-        code1.Should().NotBe(code2);
+        // Act & Assert
+        vo1.GetHashCode().Should().NotBe(vo2.GetHashCode());
     }
 
     [TestCase]
     public void GetHashCode_ReturnsSameCode_IfPropertiesAreEquals()
     {
-        // Arrange & Act
-        var code1 = _a.GetHashCode();
-        var code2 = _b.GetHashCode();
+        // Arrange
+        FakeValueObject vo1 = new()
+        {
+            Text = "text",
+            Value = 10
+        };
 
-        // Assert
-        code1.Should().Be(code2);
+        FakeValueObject vo2 = new()
+        {
+            Text = "text",
+            Value = 10
+        };
+
+        // Act & Assert
+        vo1.GetHashCode().Should().Be(vo2.GetHashCode());
     }
 }

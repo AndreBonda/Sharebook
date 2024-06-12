@@ -11,16 +11,10 @@ public class Email : ValueObject
 
     public Email(string email)
     {
-        ArgumentNullException.ThrowIfNullOrEmpty(email);
-
         if (!Regex.IsMatch(email, VALUE_REGEX))
             throw new ArgumentException(nameof(email));
 
         Value = email;
-    }
-
-    protected Email() {
-        // Useful for mocking
     }
 
     protected override IEnumerable<object> GetEqualityComponents()

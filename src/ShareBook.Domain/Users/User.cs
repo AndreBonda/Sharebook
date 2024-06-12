@@ -17,15 +17,10 @@ public class User : AggregateRoot<Guid>
         Validate();
     }
 
-    protected User()
-    {}
-
-    public bool Authenticate(string plainTextPassword, IHashingProvider hashingProvider) => 
+    public bool Authenticate(string plainTextPassword, IHashingProvider hashingProvider) =>
         _password.VerifyPassword(plainTextPassword, hashingProvider);
 
     private void Validate() {
         if (Id == Guid.Empty) throw new ArgumentException(nameof(Id));
-        ArgumentNullException.ThrowIfNull(Email, nameof(Email));
-        ArgumentNullException.ThrowIfNull(_password, nameof(_password));
     }
 }

@@ -11,38 +11,34 @@ public abstract class Entity<T>
         CreatedAt = DateTime.UtcNow;
     }
 
-    protected Entity()
-    {}
-
-    public static bool operator ==(Entity<T> left, Entity<T> right)
+    public static bool operator ==(Entity<T>? left, Entity<T>? right)
     {
         if (left is null && right is null)
         {
             return true;
         }
-        else if (left is null ^ right is null)
+
+        if (left is null ^ right is null)
         {
             return false;
         }
-        else
-        {
-            return left.Equals(right);
-        }
+
+        return left!.Equals(right);
     }
 
-    public static bool operator !=(Entity<T> left, Entity<T> right)
+    public static bool operator !=(Entity<T>? left, Entity<T>? right)
     {
         return !(left == right);
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj == null || obj.GetType() != GetType())
         {
             return false;
         }
 
-        var other = obj as Entity<T>;
+        var other = (obj as Entity<T>)!;
         return Id.Equals(other.Id);
     }
 

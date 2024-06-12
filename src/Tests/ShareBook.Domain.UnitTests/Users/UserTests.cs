@@ -10,9 +10,15 @@ namespace ShareBook.UnitTests.Users;
 [TestFixture]
 public class UserTests
 {
-    private Email _email = Substitute.For<Email>();
-    private Password _password = Substitute.For<Password>();
-    private IHashingProvider _hashingProvider =  Substitute.For<IHashingProvider>();
+    private readonly Email _email = Substitute.For<Email>("valid_email@email.com");
+    private readonly IHashingProvider _hashingProvider =  Substitute.For<IHashingProvider>();
+    private Password _password = null!;
+
+    [OneTimeSetUp]
+    public void OneTimeSetUp()
+    {
+        _password = Substitute.For<Password>("ValidPassword*!123", _hashingProvider);
+    }
 
     [SetUp]
     public void SetUp() {
@@ -26,22 +32,6 @@ public class UserTests
         var act = () => new User(Guid.Empty, _email, _password);
 
         act.Should().Throw<ArgumentException>();
-    }
-
-    [Test]
-    public void Validation_ThrowsArgumentNullException_IfEmailIsNull()
-    {
-        var act = () => new User(Guid.NewGuid(), null, _password);
-
-        act.Should().Throw<ArgumentNullException>();
-    }
-
-    [Test]
-    public void Validation_ThrowsArgumentNullException_IfPasswordIsNull()
-    {
-        var act = () => new User(Guid.NewGuid(), _email, null);
-
-        act.Should().Throw<ArgumentNullException>();
     }
 
     [Test]

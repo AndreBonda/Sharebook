@@ -18,17 +18,10 @@ public class Password : ValueObject
             throw new ArgumentException(nameof(plainTextPassword));
         }
 
-        ArgumentNullException.ThrowIfNull(hashingProvider);
-
         PasswordHash = hashingProvider.Hash(plainTextPassword);
     }
 
-    protected Password()
-    {
-        // Useful for mocking
-    }
-
-    public virtual bool VerifyPassword(string plainTextPassword, IHashingProvider hashingProvider) => 
+    public virtual bool VerifyPassword(string plainTextPassword, IHashingProvider hashingProvider) =>
         hashingProvider.Verify(plainTextPassword, PasswordHash);
 
     protected override IEnumerable<object> GetEqualityComponents()

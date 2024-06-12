@@ -6,38 +6,31 @@ namespace ShareBook.UnitTests.Shared.Primitives;
 [TestFixture]
 public class EntityTests
 {
-    private class FakeEntity : Entity<Guid>
-    {
-        public FakeEntity(Guid id) : base(id)
-        {
-        }
-    }
-
-    private FakeEntity _a;
-    private FakeEntity _b;
-
-    [SetUp]
-    public void SetUp() {
-        _a = new FakeEntity(Guid.NewGuid());
-        _b = new FakeEntity(Guid.NewGuid());
-    }
+    private class FakeEntity(Guid id) : Entity<Guid>(id);
 
     [TestCase]
     public void Equals_ReturnFalse_IfDifferentEntityTypeIsPassedAsParam()
     {
-        _a.Should().NotBe(new { });
+        FakeEntity e = new(Guid.NewGuid());
+
+        e.Should().NotBe(new { });
     }
 
     [TestCase]
     public void Equals_ReturnFalse_IfNullIsPassedAsParam()
     {
-        _a.Should().NotBe(null);
+        FakeEntity e = new(Guid.NewGuid());
+
+        e.Should().NotBe(null);
     }
 
     [TestCase]
     public void Equals_ReturnFalse_IfEntitiesHaveDifferentId()
     {
-        _a.Should().NotBe(_b);
+        FakeEntity e1 = new(Guid.NewGuid());
+        FakeEntity e2 = new(Guid.NewGuid());
+
+        e1.Should().NotBe(e2);
     }
 
     [TestCase]
@@ -45,55 +38,57 @@ public class EntityTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        _a = new FakeEntity(id);
-        _b = new FakeEntity(id);
+        FakeEntity e1 = new (id);
+        FakeEntity e2 = new (id);
 
         // Act & Assert
-        _a.Should().Be(_b);
+        e1.Should().Be(e2);
     }
 
     [TestCase]
     public void EqualityStaticOperator_CheckInequality_IfLeftOperatorIsNull()
     {
         // Arrange
-        _a = null;
+        FakeEntity? e1 = null;
+        FakeEntity e2 = new (Guid.NewGuid());
 
         // Act & Assert
-        (_a != _b).Should().BeTrue();
+        (e1 != e2).Should().BeTrue();
     }
 
     [TestCase]
     public void EqualityStaticOperator_CheckInequality_IfRightOperatorIsNull()
     {
         // Arrange
-        _b = null;
+        FakeEntity e1 = new (Guid.NewGuid());
+        FakeEntity? e2 = null;
 
         // Act & Assert
-        (_a == _b).Should().BeFalse();
-        (_a != _b).Should().BeTrue();
+        (e1 == e2).Should().BeFalse();
+        (e1 != e2).Should().BeTrue();
     }
 
     [TestCase]
-    public void EqualityStaticOperator_CheckEquality_IfOperatoresAreNull()
+    public void EqualityStaticOperator_CheckEquality_IfOperatorsAreNull()
     {
         // Arrange
-        _a = null;
-        _b = null;
+        FakeEntity? e1 = null;
+        FakeEntity? e2 = null;
 
         // Act & Assert
-        (_a == _b).Should().BeTrue();
-        (_a != _b).Should().BeFalse();
+        (e1 == e2).Should().BeTrue();
+        (e1 != e2).Should().BeFalse();
     }
 
     [TestCase]
     public void GetHashCode_ReturnsDifferentCode_IfIdsAreNotEqual()
     {
-        // Arrange & Act
-        var code1 = _a.GetHashCode();
-        var code2 = _b.GetHashCode();
+        // Arrange
+        FakeEntity e1 = new(Guid.NewGuid());
+        FakeEntity e2 = new(Guid.NewGuid());
 
-        // Assert
-        code1.Should().NotBe(code2);
+        // Act & Assert
+        e1.GetHashCode().Should().NotBe(e2.GetHashCode());
     }
 
     [TestCase]
@@ -101,14 +96,11 @@ public class EntityTests
     {
         // Arramge
         var id = Guid.NewGuid();
-        _a = new FakeEntity(id);
-        _b = new FakeEntity(id);
+        // Arrange
+        FakeEntity e1 = new(id);
+        FakeEntity e2 = new(id);
 
-        // Act
-        var code1 = _a.GetHashCode();
-        var code2 = _b.GetHashCode();
-
-        // Assert
-        code1.Should().Be(code2);
+        // Act & Assert
+        e1.GetHashCode().Should().Be(e2.GetHashCode());
     }
 }
