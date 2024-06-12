@@ -10,6 +10,6 @@ public class CreateBookDto
     public required string Author { get; set; }
     [Range(1, int.MaxValue)]
     public required int Pages { get; set; }
-    public IEnumerable<string> Labels { get; set; }
+    public IEnumerable<string>? Labels { get; set; }
     public bool SharedByOwner { get; set; }
 }

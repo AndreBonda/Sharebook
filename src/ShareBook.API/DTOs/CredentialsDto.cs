@@ -6,10 +6,10 @@ public class CreadentialsDto
 {
     [Required]
     [RegularExpression(ShareBook.Domain.Shared.ValueObjects.Email.VALUE_REGEX)]
-    public string Email { get; set; }
+    public required string Email { get; set; }
 
     [Required]
     [MinLength(ShareBook.Domain.Shared.ValueObjects.Password.MIN_LENGTH)]
     [RegularExpression(ShareBook.Domain.Shared.ValueObjects.Password.VALUE_REGEX)]
-    public string Password { get; set; }
+    public required string Password { get; set; }
 }
