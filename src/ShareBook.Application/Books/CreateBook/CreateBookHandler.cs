@@ -11,10 +11,10 @@ public class CreateBookHandler : IRequestHandler<CreateBookCmd>
     {
         _repository = repository;
     }
-    
+
     public async Task Handle(CreateBookCmd request, CancellationToken cancellationToken)
     {
-        var book = Book.New(
+        Book book = new(
             request.Id,
             request.UserId,
             request.Title,

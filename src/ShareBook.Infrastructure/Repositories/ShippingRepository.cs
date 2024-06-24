@@ -12,9 +12,13 @@ public class ShippingRepository : BaseRepository<Shipping, Guid>, IShippingRepos
 
     public async override Task AddAsync(Shipping entity)
     {
-        await _ctx.Shippings.AddAsync(entity);
+        throw new NotImplementedException();
+        //await _ctx.Shippings.AddAsync(entity);
     }
 
-    public override async Task<Shipping?> GetByIdAsync(Guid id) =>
-        await _ctx.Shippings.FirstOrDefaultAsync(b => b.Id == id);
+    public override async Task<Shipping?> GetByIdAsync(Guid id)
+    {
+        throw new NotImplementedException();
+        //await _ctx.Shippings.FirstOrDefaultAsync(b => b.Id == id);
+    }
 }

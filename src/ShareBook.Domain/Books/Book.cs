@@ -5,38 +5,43 @@ using static ShareBook.Domain.Books.LoanRequest;
 
 namespace ShareBook.Domain.Books;
 
-public class Book : AggregateRoot<Guid>
+public sealed class Book : AggregateRoot<Guid>
 {
-    private string[]? _labels;
+    private string[] _labels;
+    private readonly List<LoanRequest> _currentLoanRequests;
     public Guid OwnerId { get; private set; }
     public string Title { get; private set; }
     public string Author { get; private set; }
-    public int Pages { get; private set; }
-    public IReadOnlyCollection<string>? Labels => _labels;
+    public uint Pages { get; private set; }
     public bool SharedByOwner { get; private set; }
-    private LoanRequest? CurrentLoanRequest { get; set; }
+    public string[] Labels => _labels.ToArray();
+    public (Guid Id, Guid RequestingUserId)[] CurrentLoanRequests =>
+        _currentLoanRequests
+            .Select(lr => (lr.Id, lr.RequestingUserId))
+            .ToArray();
 
-    protected Book(
+    public Book(
         Guid id,
         Guid ownerId,
         string title,
         string author,
-        int pages,
+        uint pages,
         bool sharedByOwner,
-        IEnumerable<string>? labels) : base(id)
+        IEnumerable<string>? labels = null,
+        IEnumerable<LoanRequest>? loanRequests = null) : base(id)
     {
         OwnerId = ownerId;
         Title = title;
         Author = author;
         Pages = pages;
         SharedByOwner = sharedByOwner;
-        CurrentLoanRequest = null;
         _labels = labels?.ToArray() ?? [];
+        _currentLoanRequests = loanRequests?.ToList() ?? new();
 
         Validate();
     }
 
-    public virtual void Update(Guid bookOwnerId, string title, string author, int pages, bool sharedByOwner, IEnumerable<string>? labels)
+    public void Update(Guid bookOwnerId, string title, string author, uint pages, bool sharedByOwner, IEnumerable<string>? labels)
     {
         if (bookOwnerId != OwnerId)
             throw new UserIsNotBookOwnerException($"User {bookOwnerId} is not the owner of this book {Id}");
@@ -55,45 +60,40 @@ public class Book : AggregateRoot<Guid>
         if (!SharedByOwner)
             throw new BookNotSharedByOwnerException($"This book {Id} is not shared");
 
+        if (HasAnAcceptedLoanRequest())
+            throw new LoanRequestAlreadyAcceptedException($"The book with ID {Id} already has an accepted loan request");
+
         if (requestingUserId == OwnerId)
             throw new BookOwnerCannotMakeALoanRequest($"User {requestingUserId} is already the owner of this book {Id}");
 
-        if (CurrentLoanRequest is not null)
+        if (_currentLoanRequests.Any(lr => lr.RequestingUserId == requestingUserId))
         {
-            throw new LoanRequestAlreadyExistsException($"This book {Id} has already a loan request");
+            throw new LoanRequestAlreadyExistsForUserException(
+                $"A loan request for user ID {{requestingUserId}} already exists");
         }
 
-        CurrentLoanRequest = LoanRequest.New(Guid.NewGuid(), requestingUserId);
+        _currentLoanRequests.Add(new(Guid.NewGuid(), requestingUserId));
     }
 
-    public void RefuseLoanRequest(Guid bookOwnerId)
+    public void AcceptLoanRequest(Guid bookOwnerId, Guid loanRequestId)
     {
         if (bookOwnerId != OwnerId)
             throw new UserIsNotBookOwnerException($"User {bookOwnerId} is not the owner of this book {Id}");
 
-        if (CurrentLoanRequest is null)
-            throw new NonExistingLoanRequestException($"There is not any loan request for this book {Id}");
+        if (HasAnAcceptedLoanRequest())
+            throw new LoanRequestAlreadyAcceptedException($"The book with ID {Id} already has an accepted loan request");
 
-        if (CurrentLoanRequest.IsAccepted())
-            throw new LoanRequestAlreadyAcceptedException($"This loan request is already accepted");
+        LoanRequest? request = _currentLoanRequests.FirstOrDefault(lr => lr.Id == loanRequestId);
 
-        CurrentLoanRequest = null;
-    }
+        if (request is null)
+            throw new NonExistingLoanRequestException($"There is no loan request with this ID {Id}");
 
-    public virtual void AcceptLoanRequest(Guid bookOwnerId)
-    {
-        if (bookOwnerId != OwnerId)
-            throw new UserIsNotBookOwnerException($"User {bookOwnerId} is not the owner of this book {Id}");
-
-        if (CurrentLoanRequest is null)
-            throw new NonExistingLoanRequestException($"There is not any loan request for this book {Id}");
-
-        CurrentLoanRequest.Accept();
+        request.Accept();
 
         RaiseEvent(new LoanRequestAcceptedEvent { BookId = Id });
     }
 
-    public LoanRequestStatus? RequestStatus() => CurrentLoanRequest?.Status;
+    public bool HasAnAcceptedLoanRequest() => _currentLoanRequests.Any(lr => lr.Status == LoanRequestStatus.Accepted);
 
     private void Validate()
     {
@@ -101,20 +101,7 @@ public class Book : AggregateRoot<Guid>
         if (OwnerId == Guid.Empty) throw new ArgumentNullException(nameof(OwnerId));
         ArgumentException.ThrowIfNullOrWhiteSpace(Title);
         ArgumentException.ThrowIfNullOrWhiteSpace(Author);
-        if (Pages <= 0) throw new ArgumentOutOfRangeException(nameof(Pages));
-        if (SharedByOwner is false && CurrentLoanRequest is not null)
-            throw new RemoveSharingWithCurrentLoanRequestException($"This book {Id} has a loan request in progess.");
-    }
-
-    public static Book New(
-        Guid id,
-        Guid ownerId,
-        string title,
-        string author,
-        int pages,
-        bool sharedByOwner,
-        IEnumerable<string>? labels = null)
-    {
-        return new Book(id, ownerId, title, author, pages, sharedByOwner, labels);
+        if (SharedByOwner is false && HasAnAcceptedLoanRequest())
+            throw new RemoveSharingWithAnAcceptedLoanRequestException($"This book with ID {Id} has a loan request in progess.");
     }
 }

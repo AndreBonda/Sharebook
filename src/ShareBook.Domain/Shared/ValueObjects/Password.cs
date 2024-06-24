@@ -21,6 +21,11 @@ public class Password : ValueObject
         PasswordHash = hashingProvider.Hash(plainTextPassword);
     }
 
+    public Password(string passwordHash)
+    {
+        PasswordHash = passwordHash;
+    }
+
     public virtual bool VerifyPassword(string plainTextPassword, IHashingProvider hashingProvider) =>
         hashingProvider.Verify(plainTextPassword, PasswordHash);
 

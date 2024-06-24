@@ -24,13 +24,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Postgres
+// Sql Server
 builder.Services.AddDbContext<AppDbContext>(options =>
-{
-    options
-        .UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnectionString"))
-        .UseSnakeCaseNamingConvention();
-});
+    options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionString"))
+);
 
 // MediatR
 // builder.Services.AddMediatR(typeof(ShareBook.Application.StartUp).Assembly);

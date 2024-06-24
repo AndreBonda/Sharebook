@@ -7,6 +7,6 @@ public record UpdateBookCmd(
     Guid UserId,
     string Title,
     string Author,
-    int Pages,
+    uint Pages,
     bool SharedByOwner,
     IEnumerable<string>? Labels) : IRequest;

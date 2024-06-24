@@ -13,7 +13,7 @@ public class BookTests
     public void New_ThrowsException_IfGuidIsEmpty()
     {
         // Act
-        var act = () => Book.New(Guid.Empty, Guid.NewGuid(), "valid_title", "valid_author", 1, true);
+        var act = () => new Book(Guid.Empty, Guid.NewGuid(), "valid_title", "valid_author", 1, true);
 
         // Assert
         act.Should().Throw<ArgumentException>();
@@ -23,7 +23,7 @@ public class BookTests
     public void New_ThrowsArgumentNullException_IfOwnerIdIsAnEmptyGuid()
     {
         // Act
-        var act = () => Book.New(Guid.NewGuid(), Guid.Empty, "title", "author", 1, true);
+        var act = () => new Book(Guid.NewGuid(), Guid.Empty, "title", "author", 1, true);
 
         // Assert
         act.Should().Throw<ArgumentNullException>();
@@ -34,7 +34,7 @@ public class BookTests
     public void New_ThrowsArgumentNullException_IfTitleIsNullOrEmptyOrWhiteSpaces(string invalidTitle)
     {
         // Act
-        var act = () => Book.New(Guid.NewGuid(), Guid.NewGuid(), invalidTitle, "author", 1, true);
+        var act = () => new Book(Guid.NewGuid(), Guid.NewGuid(), invalidTitle, "author", 1, true);
 
         // Assert
         act.Should().Throw<ArgumentException>();
@@ -45,21 +45,10 @@ public class BookTests
     public void New_ThrowsArgumentNullException_IfAuthorIsNullOrEmptyOrWhiteSpaces(string invalidAuthor)
     {
         // Act
-        var act = () => Book.New(Guid.NewGuid(), Guid.NewGuid(), "title", invalidAuthor, 1, true);
+        var act = () => new Book(Guid.NewGuid(), Guid.NewGuid(), "title", invalidAuthor, 1, true);
 
         // Assert
         act.Should().Throw<ArgumentException>();
-    }
-
-    [TestCase(0)]
-    [TestCase(-1)]
-    public void New_ThrowsArgumentOutOfRangeException_IfPagesAreLessThanOne(int invalidPages)
-    {
-        // Act
-        var act = () => Book.New(Guid.NewGuid(), Guid.NewGuid(), "title", "author", invalidPages, true);
-
-        // Assert
-        act.Should().Throw<ArgumentOutOfRangeException>();
     }
 
     [Test]
@@ -70,7 +59,7 @@ public class BookTests
         var ownerId = Guid.NewGuid();
 
         // Act
-        var book = Book.New(
+        var book = new Book(
             bookId,
             ownerId,
             "title",
@@ -88,7 +77,7 @@ public class BookTests
         book.Pages.Should().Be(1);
         book.SharedByOwner.Should().BeTrue();
         book.Labels.Should().BeEquivalentTo(new[] { "label1", "label2" });
-        book.RequestStatus().Should().BeNull();
+        book.HasAnAcceptedLoanRequest().Should().BeFalse();
     }
 
     [Test]
@@ -97,7 +86,7 @@ public class BookTests
         // Arrange
         var ownerId = Guid.NewGuid();
         var notOwnerUserId = Guid.NewGuid();
-        var book = Book.New(
+        var book = new Book(
             Guid.NewGuid(),
             ownerId,
             "title",
@@ -125,7 +114,7 @@ public class BookTests
     {
         // Arrange
         var ownerId = Guid.NewGuid();
-        var book = Book.New(
+        var book = new Book(
             Guid.NewGuid(),
             ownerId,
             "title",
@@ -151,13 +140,13 @@ public class BookTests
     }
 
     [Test]
-    public void Update_ThrowsRemoveSharingWithCurrentLoanRequestException_IfShareByOnwerIsSetToFalseAndCurrentLoanRequestExists()
+    public void Update_ThrowsRemoveSharingWithAnAcceptedLoanRequestException_IfShareByOwnerIsSetToFalseWhileAnAcceptedLoanRequestExists()
     {
         // Arrange
         var ownerId = Guid.NewGuid();
-        bool sharedByOwner = false;
+        var requestingUserId = Guid.NewGuid();
 
-        var book = Book.New(
+        var book = new Book(
             Guid.NewGuid(),
             ownerId,
             "title",
@@ -167,12 +156,15 @@ public class BookTests
             new string[] { "label1" });
 
         book.RequestNewLoan(Guid.NewGuid());
+        var loanRequestId = book.CurrentLoanRequests.First().Id;
+        book.AcceptLoanRequest(ownerId, loanRequestId);
 
         // Act
+        bool sharedByOwner = false;
         var act = () => book.Update(ownerId, "title", "author", 50, sharedByOwner, new string[] { "label1" });
 
         // Assert
-        act.Should().Throw<RemoveSharingWithCurrentLoanRequestException>();
+        act.Should().Throw<RemoveSharingWithAnAcceptedLoanRequestException>();
     }
 
     [Test]
@@ -181,7 +173,7 @@ public class BookTests
         // Arrange
         bool sharedByOwner = false;
 
-        var book = Book.New(
+        var book = new Book(
             Guid.NewGuid(),
             Guid.NewGuid(),
             "title",
@@ -199,12 +191,39 @@ public class BookTests
     }
 
     [Test]
+    public void RequestNewLoan_ThrowsLoanRequestAlreadyAcceptedException_IfAnAcceptedLoanRequestIsPresent()
+    {
+        // Arrange
+        Guid requestingUserOne = Guid.NewGuid();
+        Guid requestingUserTwo = Guid.NewGuid();
+        Guid ownerId = Guid.NewGuid();
+        var book = new Book(
+            Guid.NewGuid(),
+            ownerId,
+            "title",
+            "author",
+            1,
+            true,
+            new string[] { "label" }
+        );
+
+        // Act
+        book.RequestNewLoan(requestingUserOne);
+        var loanRequestId = book.CurrentLoanRequests.First().Id;
+        book.AcceptLoanRequest(ownerId, loanRequestId);
+        var act = () => book.RequestNewLoan(requestingUserTwo);
+
+        // Assert
+        act.Should().Throw<LoanRequestAlreadyAcceptedException>();
+    }
+
+    [Test]
     public void RequestNewLoan_ThrowsBookOwnerCannotMakeALoanRequest_IfOwnerMakeARequestForHisBook()
     {
         // Arrange
         var ownerId = Guid.NewGuid();
 
-        var book = Book.New(
+        var book = new Book(
             Guid.NewGuid(),
             ownerId,
             "title",
@@ -222,10 +241,33 @@ public class BookTests
     }
 
     [Test]
+    public void RequestNewLoan_ThrowsLoanRequestAlreadyExistsForUserException_IfRequestAlreadyExists()
+    {
+        // Arrange
+        Guid requestUserId = Guid.NewGuid();
+        var book = new Book(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "title",
+            "author",
+            1,
+            true,
+            new string[] { "label" }
+        );
+
+        // Act
+        book.RequestNewLoan(requestUserId);
+        var act = () => book.RequestNewLoan(requestUserId);
+
+        // Assert
+        act.Should().Throw<LoanRequestAlreadyExistsForUserException>();
+    }
+
+    [Test]
     public void RequestNewLoan_SetCurrentLoanRequestStatus_IfLoanRequestIsCreated()
     {
         // Arrange
-        var book = Book.New(
+        var book = new Book(
             Guid.NewGuid(),
             Guid.NewGuid(),
             "title",
@@ -239,105 +281,7 @@ public class BookTests
         book.RequestNewLoan(Guid.NewGuid());
 
         // Assert
-        book.RequestStatus().Should().Be(LoanRequestStatus.WAITING_FOR_ACCEPTANCE);
-    }
-
-    [Test]
-    public void RefuseLoanRequest_ThrowsUserIsNotBookOwnerException_IfUserIsNotTheBookOwner()
-    {
-        // Arrange
-        var ownerId = Guid.NewGuid();
-        var notOwnerUserId = Guid.NewGuid();
-
-        var book = Book.New(
-            Guid.NewGuid(),
-            ownerId,
-            "title",
-            "author",
-            1,
-            true,
-            new string[] { "label" }
-            );
-
-        // Act
-        var act = () => book.RefuseLoanRequest(notOwnerUserId);
-
-        // Assert
-        act.Should().Throw<UserIsNotBookOwnerException>();
-    }
-
-    [Test]
-    public void RefuseLoanRequest_ThrowsNonExistingLoanRequestException_IfLoanRequestDoesNotExist()
-    {
-        // Arrange
-        var ownerId = Guid.NewGuid();
-
-        var book = Book.New(
-            Guid.NewGuid(),
-            ownerId,
-            "title",
-            "author",
-            1,
-            true,
-            new string[] { "label" }
-            );
-
-        // Act
-        var act = () => book.RefuseLoanRequest(ownerId);
-
-        // Assert
-        act.Should().Throw<NonExistingLoanRequestException>();
-    }
-
-    [Test]
-    public void RefuseLoanRequest_ThrowsLoanRequestAlreadyAcceptedException_IfLoanRequestIdAlreadyAccepted()
-    {
-        // Arrange
-        var ownerId = Guid.NewGuid();
-        var requestingUserId = Guid.NewGuid();
-
-        var book = Book.New(
-            Guid.NewGuid(),
-            ownerId,
-            "title",
-            "author",
-            1,
-            true,
-            new string[] { "label" }
-            );
-
-        book.RequestNewLoan(requestingUserId);
-        book.AcceptLoanRequest(ownerId);
-
-        // Act
-        var act = () => book.AcceptLoanRequest(ownerId);
-
-        // Assert
-        act.Should().Throw<LoanRequestAlreadyAcceptedException>();
-    }
-
-    [Test]
-    public void RefuseLoanRequest_SetCurrentLoanRequestStatusToNull_IfLoanRequestIsRefused()
-    {
-        // Arrange
-        var ownerId = Guid.NewGuid();
-        var requestingUserId = Guid.NewGuid();
-
-        var book = Book.New(
-            Guid.NewGuid(),
-            ownerId,
-            "title",
-            "author",
-            1,
-            true,
-            new string[] { "label" }
-            );
-
-        book.RequestNewLoan(requestingUserId);
-        book.RefuseLoanRequest(ownerId);
-
-        // Act & Assert
-        book.RequestStatus().Should().BeNull();
+        book.HasAnAcceptedLoanRequest().Should().BeFalse();
     }
 
     [Test]
@@ -345,9 +289,10 @@ public class BookTests
     {
         // Arrange
         var ownerId = Guid.NewGuid();
+        var requestingUserId = Guid.NewGuid();
         var notOwnerUserId = Guid.NewGuid();
 
-        var book = Book.New(
+        var book = new Book(
             Guid.NewGuid(),
             ownerId,
             "title",
@@ -358,7 +303,9 @@ public class BookTests
             );
 
         // Act
-        var act = () => book.AcceptLoanRequest(notOwnerUserId);
+        book.RequestNewLoan(requestingUserId);
+        Guid loanRequestId = book.CurrentLoanRequests.First().Id;
+        var act = () => book.AcceptLoanRequest(notOwnerUserId, loanRequestId);
 
         // Assert
         act.Should().Throw<UserIsNotBookOwnerException>();
@@ -370,7 +317,7 @@ public class BookTests
         // Arrange
         var ownerId = Guid.NewGuid();
 
-        var book = Book.New(
+        var book = new Book(
             Guid.NewGuid(),
             ownerId,
             "title",
@@ -381,10 +328,41 @@ public class BookTests
             );
 
         // Act
-        var act = () => book.AcceptLoanRequest(ownerId);
+        var act = () => book.AcceptLoanRequest(ownerId, Guid.NewGuid());
 
         // Assert
         act.Should().Throw<NonExistingLoanRequestException>();
+    }
+
+    [Test]
+    public void AcceptLoanRequest_ThrowsLoanRequestAlreadyAcceptedException_IfExistsAnAcceptedLoanRequest()
+    {
+        // Arrange
+        var ownerId = Guid.NewGuid();
+        var requestingUserIdOne = Guid.NewGuid();
+        var requestingUserIdTwo = Guid.NewGuid();
+        var book = new Book(
+            Guid.NewGuid(),
+            ownerId,
+            "title",
+            "author",
+            1,
+            true,
+            new string[] { "label" }
+        );
+
+        // Act
+        book.RequestNewLoan(requestingUserIdOne);
+        book.RequestNewLoan(requestingUserIdTwo);
+        Guid loanRequestIdOne = book.CurrentLoanRequests[0].Id;
+        Guid loanRequestIdTwo = book.CurrentLoanRequests[1].Id;
+
+        book.AcceptLoanRequest(ownerId, loanRequestIdOne);
+
+        var act = () => book.AcceptLoanRequest(ownerId, loanRequestIdTwo);
+
+        // Assert
+        act.Should().Throw<LoanRequestAlreadyAcceptedException>();
     }
 
     [Test]
@@ -394,7 +372,7 @@ public class BookTests
         var ownerId = Guid.NewGuid();
         var requestingUserId = Guid.NewGuid();
 
-        var book = Book.New(
+        var book = new Book(
             Guid.NewGuid(),
             ownerId,
             "title",
@@ -404,14 +382,13 @@ public class BookTests
             new string[] { "label" }
             );
 
+        // Act
         book.RequestNewLoan(requestingUserId);
-
-        // Act & Assert
-        book.AcceptLoanRequest(ownerId);
+        Guid loanRequestId = book.CurrentLoanRequests.First().Id;
+        book.AcceptLoanRequest(ownerId, loanRequestId);
+        book.HasAnAcceptedLoanRequest().Should().BeTrue();
 
         var events = book.ReleaseEvents();
-
-        book.RequestStatus().Should().Be(LoanRequestStatus.ACCEPTED);
         events.Should().ContainSingle(e => e.GetType() == typeof(LoanRequestAcceptedEvent));
 
         var @event = ((LoanRequestAcceptedEvent)events.First());

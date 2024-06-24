@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ShareBook.Infrastructure;
 
@@ -11,9 +12,11 @@ using ShareBook.Infrastructure;
 namespace ShareBook.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240623091359_AddLoanRequestData")]
+    partial class AddLoanRequestData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,9 +40,6 @@ namespace ShareBook.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("OwnerId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<long>("Pages")
                         .HasColumnType("bigint");
 
@@ -52,8 +52,6 @@ namespace ShareBook.Infrastructure.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("OwnerId");
 
                     b.ToTable("Books");
                 });
@@ -101,31 +99,15 @@ namespace ShareBook.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<Guid?>("UserDataId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserDataId");
-
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("ShareBook.Infrastructure.DataModel.BookData", b =>
-                {
-                    b.HasOne("ShareBook.Infrastructure.DataModel.UserData", "Owner")
-                        .WithMany()
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("ShareBook.Infrastructure.DataModel.LoanRequestData", b =>
                 {
                     b.HasOne("ShareBook.Infrastructure.DataModel.BookData", "Book")
-                        .WithMany("LoanRequests")
+                        .WithMany()
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -139,23 +121,6 @@ namespace ShareBook.Infrastructure.Migrations
                     b.Navigation("Book");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("ShareBook.Infrastructure.DataModel.UserData", b =>
-                {
-                    b.HasOne("ShareBook.Infrastructure.DataModel.UserData", null)
-                        .WithMany("Books")
-                        .HasForeignKey("UserDataId");
-                });
-
-            modelBuilder.Entity("ShareBook.Infrastructure.DataModel.BookData", b =>
-                {
-                    b.Navigation("LoanRequests");
-                });
-
-            modelBuilder.Entity("ShareBook.Infrastructure.DataModel.UserData", b =>
-                {
-                    b.Navigation("Books");
                 });
 #pragma warning restore 612, 618
         }

@@ -25,7 +25,7 @@ public class BookController : ControllerBase
     public async Task<IActionResult> GetById(Guid id)
     {
         var book = await _mediator.Send(new GetBookQuery(id));
-        
+
         return Ok(book);
     }
 
@@ -82,20 +82,12 @@ public class BookController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = BookId }, null);
     }
 
-    [HttpPost("book/{book_id}/refuse_loan_request")]
-    public async Task<IActionResult> RefuseLoanRequest(
-        [FromRoute(Name = "book_id")] Guid BookId)
-    {
-        await _mediator.Send(new RefuseLoanRequestCmd(BookId, this.GetUserId()));
-
-        return CreatedAtAction(nameof(GetById), new { id = BookId }, null);
-    }
-
     [HttpPost("book/{book_id}/accept_loan_request")]
     public async Task<IActionResult> AcceptLoanRequest(
-        [FromRoute(Name = "book_id")] Guid bookId)
+        [FromRoute(Name = "book_id")] Guid bookId,
+        [FromRoute(Name = "loan_request_id")] Guid loanRequestId)
     {
-        await _mediator.Send(new AcceptLoanRequestCmd(bookId, this.GetUserId()));
+        await _mediator.Send(new AcceptLoanRequestCmd(bookId, loanRequestId, this.GetUserId()));
 
         return CreatedAtAction(nameof(GetById), new { id = bookId }, null);
     }

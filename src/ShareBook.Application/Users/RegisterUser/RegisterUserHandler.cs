@@ -6,27 +6,21 @@ using ShareBook.Domain.Users;
 
 namespace ShareBook.Application.Users;
 
-public class RegisterUserHandler : IRequestHandler<RegisterUserCmd>
+public class RegisterUserHandler(IUserRepository userRepository, IHashingProvider hashingProvider)
+    : IRequestHandler<RegisterUserCmd>
 {
-    private readonly IUserRepository _userRepository;
-    private readonly IHashingProvider _hashingProvider;
-
-    public RegisterUserHandler(IUserRepository userRepository, IHashingProvider hashingProvider)
-    {
-        _userRepository = userRepository;
-        _hashingProvider = hashingProvider;
-    }
-    
     public async Task Handle(RegisterUserCmd request, CancellationToken cancellationToken)
     {
-        if(await _userRepository.GetByEmailAsync(request.Email) is not null)
+        if (await userRepository.GetByEmailAsync(request.Email) is not null)
             throw new BadRequestException("Email already used");
 
-        User user = new(Guid.NewGuid(),
+        User user = new(
+            Guid.NewGuid(),
             new Email(request.Email),
-            new Password(request.Password, _hashingProvider));
+            new Password(request.Password, hashingProvider)
+        );
 
-        await _userRepository.AddAsync(user);
-        await _userRepository.SaveAsync();
+        await userRepository.AddAsync(user);
+        await userRepository.SaveAsync();
     }
 }

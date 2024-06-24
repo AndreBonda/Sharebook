@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ShareBook.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Createbookmigration : Migration
+    public partial class AddBookData : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,13 +15,12 @@ namespace ShareBook.Infrastructure.Migrations
                 name: "Books",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Owner = table.Column<string>(type: "text", nullable: true),
-                    Title = table.Column<string>(type: "text", nullable: true),
-                    Author = table.Column<string>(type: "text", nullable: true),
-                    Pages = table.Column<int>(type: "integer", nullable: false),
-                    Labels = table.Column<string>(type: "text", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Author = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Pages = table.Column<long>(type: "bigint", nullable: false),
+                    SharedByOwner = table.Column<bool>(type: "bit", nullable: false),
+                    Labels = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {

@@ -450,3 +450,5 @@ $RECYCLE.BIN/
 .vscode/*
 
 local_api
+
+.env
