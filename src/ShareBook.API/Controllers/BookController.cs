@@ -10,21 +10,14 @@ namespace ShareBook.API.Controllers;
 [ApiController]
 [Route("api")]
 [Authorize]
-public class BookController : ControllerBase
+public class BookController(ILogger<BookController> logger, IMediator mediator) : ControllerBase
 {
-    private readonly ILogger<BookController> _logger;
-    private readonly IMediator _mediator;
+    private readonly ILogger<BookController> _logger = logger;
 
-    public BookController(ILogger<BookController> logger, IMediator mediator)
-    {
-        _logger = logger;
-        _mediator = mediator;
-    }
-
-    [HttpGet("book/{id}")]
+    [HttpGet("books/{id}")]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var book = await _mediator.Send(new GetBookQuery(id));
+        var book = await mediator.Send(new GetBookQuery(id));
 
         return Ok(book);
     }
@@ -32,7 +25,7 @@ public class BookController : ControllerBase
     [HttpGet("books")]
     public async Task<IActionResult> GetAll(string title)
     {
-        var books = await _mediator.Send(new GetBooksQuery(
+        var books = await mediator.Send(new GetBooksQuery(
             title
         ));
 
@@ -44,7 +37,7 @@ public class BookController : ControllerBase
     {
         var id = Guid.NewGuid();
 
-        await _mediator.Send(new CreateBookCmd(
+        await mediator.Send(new CreateBookCmd(
             id,
             this.GetUserId(),
             dto.Title,
@@ -60,7 +53,7 @@ public class BookController : ControllerBase
     [HttpPatch("book/{id}")]
     public async Task<IActionResult> Update(Guid id, UpdateBookDto dto)
     {
-        await _mediator.Send(new UpdateBookCmd(
+        await mediator.Send(new UpdateBookCmd(
             id,
             this.GetUserId(),
             dto.Title,
@@ -77,7 +70,7 @@ public class BookController : ControllerBase
     public async Task<IActionResult> RequestLoan(
         [FromRoute(Name = "book_id")] Guid BookId)
     {
-        await _mediator.Send(new CreateLoanRequestCmd(BookId, this.GetUserId()));
+        await mediator.Send(new CreateLoanRequestCmd(BookId, this.GetUserId()));
 
         return CreatedAtAction(nameof(GetById), new { id = BookId }, null);
     }
@@ -87,7 +80,7 @@ public class BookController : ControllerBase
         [FromRoute(Name = "book_id")] Guid bookId,
         [FromRoute(Name = "loan_request_id")] Guid loanRequestId)
     {
-        await _mediator.Send(new AcceptLoanRequestCmd(bookId, loanRequestId, this.GetUserId()));
+        await mediator.Send(new AcceptLoanRequestCmd(bookId, loanRequestId, this.GetUserId()));
 
         return CreatedAtAction(nameof(GetById), new { id = bookId }, null);
     }
