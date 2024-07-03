@@ -1,5 +1,3 @@
-using System.Text;
-using Dapper;
 using Microsoft.EntityFrameworkCore;
 using ShareBook.Application.Books;
 using ShareBook.Application.Books.ViewModels;
@@ -9,41 +7,36 @@ namespace ShareBook.Infrastructure.Queries;
 
 public class BookQueries(AppDbContext ctx) : IBookQueries
 {
-    public async Task<IEnumerable<BookVM>> GetBooksByTitleAsync(string title)
+    public async Task<IEnumerable<BookVM>> GetBooksByTitleAsync(string? title, int offset, int limit)
     {
-        var queryBuilder = new StringBuilder();
-        var queryParam = new DynamicParameters();
+        var query = ctx.Books
+            .Include(b => b.Owner)
+            .Include(b => b.LoanRequests)
+            .AsNoTracking();
 
-        queryBuilder.Append(@"
-        select
-        books.id,
-        owner_id,
-        title,
-        author,
-        pages,
-        labels,
-        shared_by_owner ,
-        requesting_user.email as requesting_user_email,
-        current_loan_request_status as request_status
-        from books
-        	left join users as owner on owner.id = owner_id
-        	left join users as requesting_user on requesting_user.id = current_loan_request_requesting_user_id
-        where 1 = 1");
-
-        if(!string.IsNullOrEmpty(title)) {
-            queryBuilder.Append(" and lower(title) like @Title");
-            queryParam.Add("Title", $"%{title.ToLower()}%");
+        if (!string.IsNullOrEmpty(title))
+        {
+            query = query.Where(b => b.Title.ToLower().Contains(title.ToLower()));
         }
 
-        using var connection = ctx.Database.GetDbConnection();
-        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+        List<BookData> books = await query.Skip(offset).Take(limit).ToListAsync();
 
-        var books = await connection.QueryAsync<BookVM>(
-            sql: queryBuilder.ToString(),
-            param: queryParam
-        );
-
-        return books;
+        return books.Select(book => new BookVM()
+        {
+            Id = book.Id,
+            OwnerEmail = book.Owner.Email,
+            Title = book.Title,
+            Author = book.Author,
+            Pages = book.Pages,
+            Labels = book.Labels,
+            SharedByOwner = book.SharedByOwner,
+            LoanRequests = book.LoanRequests.Select(lr => new LoanRequestVM()
+            {
+                Id = lr.Id,
+                RequestingUserId = lr.UserId,
+                Status = lr.Status
+            }).ToArray()
+        });
     }
 
     public async Task<BookVM?> GetBookByIdAsync(Guid id)

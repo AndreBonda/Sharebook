@@ -5,11 +5,13 @@ using ShareBook.Infrastructure.DataModel;
 
 namespace ShareBook.Infrastructure.Repositories;
 
-public class UserRepository(AppDbContext ctx) : BaseRepository<User, Guid>(ctx), IUserRepository
+public class UserRepository : BaseRepository<User, Guid>, IUserRepository
 {
+    public UserRepository(AppDbContext ctx) : base(ctx) { }
+
     public override async Task AddAsync(User entity)
     {
-        await _ctx.Users.AddAsync(new UserData
+        await ctx.Users.AddAsync(new UserData
         {
             Id = entity.Id,
             Email = entity.Email.Value,
@@ -20,7 +22,7 @@ public class UserRepository(AppDbContext ctx) : BaseRepository<User, Guid>(ctx),
 
     public async Task<User?> GetByEmailAsync(string email)
     {
-        UserData? userData = await _ctx.Users.FirstOrDefaultAsync(u => u.Email == email);
+        UserData? userData = await ctx.Users.FirstOrDefaultAsync(u => u.Email == email);
 
         if (userData is null) return null;
 
@@ -33,7 +35,7 @@ public class UserRepository(AppDbContext ctx) : BaseRepository<User, Guid>(ctx),
 
     public override async Task<User?> GetByIdAsync(Guid id)
     {
-        UserData? userData = await _ctx.Users.FirstOrDefaultAsync(b => b.Id == id);
+        UserData? userData = await ctx.Users.FirstOrDefaultAsync(b => b.Id == id);
 
         if (userData is null) return null;
 

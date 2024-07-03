@@ -20,6 +20,17 @@ public class BookRepository(AppDbContext ctx) : BaseRepository<Book, Guid>(ctx),
         });
     }
 
+    public async Task<int> UpdateLoanRequests(Book book)
+    {
+        BookData? bookData = await ctx.Books
+            .Include(b => b.LoanRequests)
+            .FirstOrDefaultAsync(b => b.Id == book.Id);
+
+        if (bookData is null) return 0;
+
+        throw new NotImplementedException();
+    }
+
     public override async Task<Book?> GetByIdAsync(Guid id)
     {
         BookData? bookData = await ctx.Books

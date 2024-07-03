@@ -3,15 +3,8 @@ using ShareBook.Domain.Books;
 
 namespace ShareBook.Application.Books;
 
-public class CreateBookHandler : IRequestHandler<CreateBookCmd>
+public class CreateBookHandler(IBookRepository repository) : IRequestHandler<CreateBookCmd>
 {
-    private readonly IBookRepository _repository;
-
-    public CreateBookHandler(IBookRepository repository)
-    {
-        _repository = repository;
-    }
-
     public async Task Handle(CreateBookCmd request, CancellationToken cancellationToken)
     {
         Book book = new(
@@ -23,7 +16,7 @@ public class CreateBookHandler : IRequestHandler<CreateBookCmd>
             request.SharedByOwner,
             request.Labels
         );
-        await _repository.AddAsync(book);
-        await _repository.SaveAsync();
+        await repository.AddAsync(book);
+        await repository.SaveAsync();
     }
 }

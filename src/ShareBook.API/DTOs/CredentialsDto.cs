@@ -9,7 +9,7 @@ public class CreadentialsDto
     public required string Email { get; set; }
 
     [Required]
-    [MinLength(ShareBook.Domain.Shared.ValueObjects.Password.MIN_LENGTH)]
-    [RegularExpression(ShareBook.Domain.Shared.ValueObjects.Password.VALUE_REGEX)]
+    [MinLength(ShareBook.Domain.Shared.ValueObjects.Password.MinLength)]
+    [RegularExpression(ShareBook.Domain.Shared.ValueObjects.Password.ValueRegex)]
     public required string Password { get; set; }
 }

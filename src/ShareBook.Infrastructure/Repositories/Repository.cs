@@ -3,18 +3,18 @@ using ShareBook.Domain.Shared;
 
 namespace ShareBook.Infrastructure.Repositories;
 
-public abstract class BaseRepository<Entity, PrimaryKey> : IRepository<Entity, PrimaryKey>
+public abstract class BaseRepository<TEntity, TPrimaryKey> : IRepository<TEntity, TPrimaryKey>
 {
-    protected readonly AppDbContext _ctx;
+    protected readonly AppDbContext ctx;
 
-    public BaseRepository(AppDbContext ctx)
+    protected BaseRepository(AppDbContext ctx)
     {
-        _ctx = ctx;
+        this.ctx = ctx;
     }
 
-    public abstract Task AddAsync(Entity entity);
+    public abstract Task AddAsync(TEntity entity);
 
-    public abstract Task<Entity?> GetByIdAsync(PrimaryKey id);
+    public abstract Task<TEntity?> GetByIdAsync(TPrimaryKey id);
 
-    public async Task SaveAsync() => await _ctx.SaveChangesAsync();
+    public async Task SaveAsync() => await ctx.SaveChangesAsync();
 }

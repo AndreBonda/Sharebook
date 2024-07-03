@@ -23,7 +23,7 @@ public class BookController(ILogger<BookController> logger, IMediator mediator) 
     }
 
     [HttpGet("books")]
-    public async Task<IActionResult> GetAll(string title)
+    public async Task<IActionResult> GetAll(string? title)
     {
         var books = await mediator.Send(new GetBooksQuery(
             title
@@ -47,7 +47,7 @@ public class BookController(ILogger<BookController> logger, IMediator mediator) 
             dto.Labels
         ));
 
-        return CreatedAtAction(nameof(GetById), new { id = id }, null);
+        return CreatedAtAction(nameof(GetById), new { id }, null);
     }
 
     [HttpPatch("book/{id}")]
@@ -66,7 +66,7 @@ public class BookController(ILogger<BookController> logger, IMediator mediator) 
         return CreatedAtAction(nameof(GetById), new { id = id }, null);
     }
 
-    [HttpPost("book/{book_id}/new_loan_request")]
+    [HttpPost("books/{book_id}/new_loan_request")]
     public async Task<IActionResult> RequestLoan(
         [FromRoute(Name = "book_id")] Guid BookId)
     {
