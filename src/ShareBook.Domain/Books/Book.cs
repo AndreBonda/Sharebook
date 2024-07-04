@@ -15,10 +15,7 @@ public sealed class Book : AggregateRoot<Guid>
     public uint Pages { get; private set; }
     public bool SharedByOwner { get; private set; }
     public string[] Labels => _labels.ToArray();
-    public (Guid Id, Guid RequestingUserId)[] CurrentLoanRequests =>
-        _currentLoanRequests
-            .Select(lr => (lr.Id, lr.RequestingUserId))
-            .ToArray();
+    public List<LoanRequest> CurrentLoanRequests => _currentLoanRequests.ToList();
 
     public Book(
         Guid id,

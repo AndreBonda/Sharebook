@@ -18,7 +18,7 @@ public class UpdateBookHandler : IRequestHandler<UpdateBookCmd>
         var book = await _repo.GetByIdAsync(request.Id);
 
         if(book is null)
-            throw new NotFoundException(nameof(book), request.Id);
+            throw new NotFoundException();
 
         book.Update(
             request.UserId,
@@ -28,7 +28,5 @@ public class UpdateBookHandler : IRequestHandler<UpdateBookCmd>
             request.SharedByOwner,
             request.Labels
         );
-
-       await _repo.SaveAsync();
     }
 }

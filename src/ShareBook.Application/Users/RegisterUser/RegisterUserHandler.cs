@@ -21,6 +21,5 @@ public class RegisterUserHandler(IUserRepository userRepository, IHashingProvide
         );
 
         await userRepository.AddAsync(user);
-        await userRepository.SaveAsync();
     }
 }

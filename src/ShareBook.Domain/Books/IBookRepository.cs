@@ -4,5 +4,5 @@ namespace ShareBook.Domain.Books;
 
 public interface IBookRepository : IRepository<Book, Guid>
 {
-    Task<int> UpdateLoanRequests(Book book);
+    Task Update(Book book);
 }

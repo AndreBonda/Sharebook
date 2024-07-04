@@ -4,18 +4,17 @@ using ShareBook.Domain.Shared.Exceptions;
 
 namespace ShareBook.Application.Books;
 
-public class CreateLoanRequestHandler(IBookRepository repository) : IRequestHandler<CreateLoanRequestCmd>
+public class CreateLoanRequestHandler(IBookRepository bookRepository) : IRequestHandler<CreateLoanRequestCmd>
 {
     public async Task Handle(CreateLoanRequestCmd request, CancellationToken cancellationToken)
     {
-        var book = await repository.GetByIdAsync(request.BookId);
+        var book = await bookRepository.GetByIdAsync(request.BookId);
 
         if(book is null)
-            throw new NotFoundException();
+            throw new NotFoundException($"Book not found. (ID {request.BookId})");
 
         book.RequestNewLoan(request.UserId);
 
-        await repository.UpdateLoanRequests(book);
-        await repository.SaveAsync();
+        await bookRepository.Update(book);
     }
 }

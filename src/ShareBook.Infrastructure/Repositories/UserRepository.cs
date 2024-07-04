@@ -11,18 +11,19 @@ public class UserRepository : BaseRepository<User, Guid>, IUserRepository
 
     public override async Task AddAsync(User entity)
     {
-        await ctx.Users.AddAsync(new UserData
+        await _ctx.Users.AddAsync(new UserData
         {
             Id = entity.Id,
             Email = entity.Email.Value,
             Password = entity.Password.PasswordHash,
             CreatedAt = entity.CreatedAt
         });
+        await _ctx.SaveChangesAsync();
     }
 
     public async Task<User?> GetByEmailAsync(string email)
     {
-        UserData? userData = await ctx.Users.FirstOrDefaultAsync(u => u.Email == email);
+        UserData? userData = await _ctx.Users.FirstOrDefaultAsync(u => u.Email == email);
 
         if (userData is null) return null;
 
@@ -35,7 +36,7 @@ public class UserRepository : BaseRepository<User, Guid>, IUserRepository
 
     public override async Task<User?> GetByIdAsync(Guid id)
     {
-        UserData? userData = await ctx.Users.FirstOrDefaultAsync(b => b.Id == id);
+        UserData? userData = await _ctx.Users.FirstOrDefaultAsync(b => b.Id == id);
 
         if (userData is null) return null;
 

@@ -18,6 +18,5 @@ public class CreateShippingOnLoanRequestAccepted : INotificationHandler<LoanRequ
         var shippingId = Guid.NewGuid();
         var shipping = Shipping.New(shippingId, notification.BookId);
         await _shippingRepository.AddAsync(shipping);
-        await _shippingRepository.SaveAsync();
     }
 }

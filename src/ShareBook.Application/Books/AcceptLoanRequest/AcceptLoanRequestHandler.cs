@@ -26,7 +26,6 @@ public class AcceptLoanRequestHandler : IRequestHandler<AcceptLoanRequestCmd>
 
         book.AcceptLoanRequest(request.UserId, request.LoanRequestId);
 
-        await _bookRepository.SaveAsync();
 
         IEnumerable<DomainEvent> events = book.ReleaseEvents();
         await _domainEventDispatcher.DispatchEventsAsync(events);

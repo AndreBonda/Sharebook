@@ -1,14 +1,17 @@
+using System.Collections.ObjectModel;
 using Microsoft.EntityFrameworkCore;
 using ShareBook.Domain.Books;
 using ShareBook.Infrastructure.DataModel;
 
 namespace ShareBook.Infrastructure.Repositories;
 
-public class BookRepository(AppDbContext ctx) : BaseRepository<Book, Guid>(ctx), IBookRepository
+public class BookRepository : BaseRepository<Book, Guid>, IBookRepository
 {
+    public BookRepository(AppDbContext ctx) : base(ctx) { }
+
     public override async Task AddAsync(Book entity)
     {
-        await ctx.Books.AddAsync(new BookData
+        await _ctx.Books.AddAsync(new BookData
         {
             Id = entity.Id,
             OwnerId = entity.OwnerId,
@@ -18,23 +21,40 @@ public class BookRepository(AppDbContext ctx) : BaseRepository<Book, Guid>(ctx),
             SharedByOwner = entity.SharedByOwner,
             Labels = entity.Labels
         });
+        await _ctx.SaveChangesAsync();
     }
 
-    public async Task<int> UpdateLoanRequests(Book book)
+    public async Task Update(Book book)
     {
-        BookData? bookData = await ctx.Books
+        BookData? bookData = await _ctx.Books
             .Include(b => b.LoanRequests)
             .FirstOrDefaultAsync(b => b.Id == book.Id);
 
-        if (bookData is null) return 0;
+        if (bookData is null) return;
 
-        throw new NotImplementedException();
+        bookData.OwnerId = book.OwnerId;
+        bookData.Title = book.Title;
+        bookData.Author = book.Author;
+        bookData.Pages = book.Pages;
+        bookData.SharedByOwner = book.SharedByOwner;
+        bookData.Labels = book.Labels;
+        bookData.LoanRequests = book.CurrentLoanRequests.Select(lr => new LoanRequestData()
+        {
+            Id = lr.Id,
+            BookId = book.Id,
+            UserId = lr.RequestingUserId,
+            Status = lr.Status
+        })
+        .ToList();
+
+        await _ctx.SaveChangesAsync();
     }
 
     public override async Task<Book?> GetByIdAsync(Guid id)
     {
-        BookData? bookData = await ctx.Books
+        BookData? bookData = await _ctx.Books
             .Include(bookData => bookData.LoanRequests)
+            .AsNoTracking()
             .FirstOrDefaultAsync(b => b.Id == id);
         if (bookData is null) return null;
 

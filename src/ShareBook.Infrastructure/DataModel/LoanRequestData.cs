@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using ShareBook.Domain.Books;
 using ShareBook.Domain.Users;
 
@@ -5,6 +6,7 @@ namespace ShareBook.Infrastructure.DataModel;
 
 public class LoanRequestData
 {
+    [DatabaseGenerated(DatabaseGeneratedOption.None)]
     public required Guid Id { get; set; }
     public required LoanRequest.LoanRequestStatus Status { get; set; }
     public required Guid UserId { get; set; }

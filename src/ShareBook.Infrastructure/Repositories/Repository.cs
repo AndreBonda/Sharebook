@@ -5,16 +5,14 @@ namespace ShareBook.Infrastructure.Repositories;
 
 public abstract class BaseRepository<TEntity, TPrimaryKey> : IRepository<TEntity, TPrimaryKey>
 {
-    protected readonly AppDbContext ctx;
+    protected readonly AppDbContext _ctx;
 
     protected BaseRepository(AppDbContext ctx)
     {
-        this.ctx = ctx;
+        _ctx = ctx;
     }
 
     public abstract Task AddAsync(TEntity entity);
 
     public abstract Task<TEntity?> GetByIdAsync(TPrimaryKey id);
-
-    public async Task SaveAsync() => await ctx.SaveChangesAsync();
 }

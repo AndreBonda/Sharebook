@@ -17,6 +17,5 @@ public class CreateBookHandler(IBookRepository repository) : IRequestHandler<Cre
             request.Labels
         );
         await repository.AddAsync(book);
-        await repository.SaveAsync();
     }
 }
